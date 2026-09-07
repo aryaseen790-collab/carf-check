@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CARF exposure check — is your crypto reported to your tax office?</title>
+<meta name="description" content="Free tool. Check whether your crypto activity falls under the OECD Crypto-Asset Reporting Framework, which tax authority receives your data, and on what date. Every date traced to a named legal instrument. Nothing you enter leaves the page.">
+<meta name="robots" content="index,follow">
+<style>
+/* ============================================================
+   CARF exposure check
+   One file. No dependencies, no network requests, no storage.
+   Palette: ink / field / panel / rule / muted / signal (6 values).
+   The signal colour marks the next upcoming date and nothing else.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  --ink:    #0e1418;
+  --muted:  #4b5762;
+  --rule:   #b9bfc5;
+  --field:  #e7eaec;
+  --panel:  #f7f8f9;
+  --signal: #a63a05;
+
+  --f: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --t-xs: 0.8125rem;
+  --t-s:  0.9375rem;
+  --t-b:  1.0625rem;
+  --t-m:  1.25rem;
+  --t-l:  1.5rem;
+  --t-xl: 2rem;
+
+  --sp: 1rem;
+  --measure: 66ch;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--field);
+  color: var(--ink);
+  font-family: var(--f);
+  font-size: var(--t-b);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+
+h1, h2, h3 { line-height: 1.15; letter-spacing: -0.021em; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(1.75rem, 7.4vw, var(--t-xl)); font-weight: 750; }
+h2 { font-size: var(--t-l); font-weight: 700; }
+h3 { font-size: var(--t-m); font-weight: 700; }
+p  { margin: 0 0 0.75rem; max-width: var(--measure); }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 700; }
+
+a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--signal); }
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* ---------- masthead ---------- */
+
+.masthead { margin-bottom: 2.5rem; }
+.masthead h1 { margin-bottom: 1rem; }
+
+.lede { font-size: clamp(1.125rem, 4.6vw, var(--t-m)); line-height: 1.4; font-weight: 400; margin-bottom: 1.25rem; }
+
+.privacy {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  padding: 0.75rem 0;
+  font-size: var(--t-s);
+  color: var(--muted);
+  max-width: var(--measure);
+}
+.privacy b { color: var(--ink); font-weight: 650; }
+
+/* ---------- form ---------- */
+
+form { margin: 0 0 2rem; }
+
+fieldset {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 0 0 1.75rem;
+  padding: 1.25rem 0 0;
+}
+fieldset::after { content: ""; display: table; clear: both; }
+
+/* float keeps the legend from interrupting the fieldset's top rule */
+legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  font-size: var(--t-m);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.hint {
+  font-size: var(--t-s);
+  color: var(--muted);
+  margin: 0.375rem 0 0.875rem;
+  max-width: var(--measure);
+}
+
+select {
+  font: inherit;
+  font-size: var(--t-b);
+  width: 100%;
+  max-width: 26rem;
+  padding: 0.6rem 0.7rem;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--muted);
+  border-radius: 2px;
+}
+
+.opts { display: grid; gap: 0.125rem; }
+
+.opt {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  align-items: start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.5rem 0.5rem 0.25rem;
+  border-bottom: 1px solid rgba(185,191,197,0.55);
+  cursor: pointer;
+}
+.opt:last-child { border-bottom: 0; }
+.opt input { width: 1.05rem; height: 1.05rem; margin: 0.28rem 0 0; accent-color: var(--ink); }
+.opt:has(input:checked) { background: var(--panel); }
+.opt-t { font-weight: 600; }
+.opt-d { display: block; font-weight: 400; font-size: var(--t-s); color: var(--muted); }
+
+button {
+  font: inherit;
+  font-size: var(--t-b);
+  font-weight: 650;
+  color: var(--panel);
+  background: var(--ink);
+  border: 0;
+  border-radius: 2px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  min-height: 3rem;
+}
+button:hover { background: #1d2830; }
+
+.err {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.875rem;
+  border-left: 4px solid var(--signal);
+  background: var(--panel);
+  font-size: var(--t-s);
+  max-width: var(--measure);
+}
+.err:empty { display: none; }
+.err b { color: var(--signal); }
+
+/* ---------- result ---------- */
+
+/* the result region takes focus after submit; it must not spend the accent colour */
+.result:focus, .result:focus-visible { outline: none; }
+.result:empty { display: none; }
+.result { margin-top: 2.5rem; }
+.result > * + * { margin-top: 2.25rem; }
+
+.verdict { border-top: 3px solid var(--ink); padding-top: 1.25rem; }
+.verdict h2 { margin-bottom: 0.75rem; }
+.verdict .who {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background: var(--panel);
+  border-left: 3px solid var(--ink);
+  font-size: var(--t-s);
+}
+.verdict .who span { display: block; color: var(--muted); margin-bottom: 0.125rem; }
+.verdict .who b { font-size: var(--t-b); font-weight: 650; }
+
+.block > h3 { padding-bottom: 0.625rem; border-bottom: 1px solid var(--rule); margin-bottom: 1.125rem; }
+
+/* ---------- timeline: the centrepiece ---------- */
+
+.tl { list-style: none; margin: 0; padding: 0; }
+
+.tl-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  gap: 0 0.875rem;
+  padding: 0 0 1.75rem;
+}
+.tl-row:last-child { padding-bottom: 0; }
+
+/* the rail */
+.tl-row::before {
+  content: "";
+  position: absolute;
+  left: 0.375rem;
+  top: 0.7rem;
+  bottom: -0.35rem;
+  width: 1px;
+  background: var(--rule);
+}
+.tl-row:last-child::before { display: none; }
+
+.tl-mark {
+  grid-column: 1;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  margin-top: 0.42rem;
+  border: 2px solid var(--ink);
+  background: var(--field);
+}
+.tl-row.is-past .tl-mark { border-color: var(--muted); background: var(--muted); }
+.tl-row.is-next .tl-mark { border-color: var(--signal); background: var(--signal); }
+
+.tl-datecol { grid-column: 2; }
+.tl-body { grid-column: 2; min-width: 0; }
+
+.tl-date {
+  display: block;
+  font-size: clamp(1.4rem, 7.2vw, 1.75rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.375rem;
+}
+.tl-date .d { display: inline-block; width: 2ch; text-align: right; }
+.tl-date .m { display: inline-block; min-width: 9.2ch; }
+.tl-row.is-past .tl-date { color: var(--muted); font-weight: 600; }
+.tl-row.is-next .tl-date { color: var(--signal); }
+
+.tl-tag {
+  display: inline-block;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.tl-row.is-next .tl-tag { color: var(--signal); }
+
+.tl-what { font-weight: 650; margin: 0 0 0.25rem; }
+.tl-detail { font-size: var(--t-s); margin: 0 0 0.375rem; color: var(--ink); }
+.tl-cite { font-size: var(--t-xs); color: var(--muted); margin: 0; }
+
+.tl-note {
+  margin-top: 1.25rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--t-s);
+  color: var(--muted);
+}
+
+/* ---------- lists ---------- */
+
+.hands { margin: 0; padding: 0; list-style: none; }
+.hands li {
+  padding: 0.625rem 0;
+  border-bottom: 1px solid rgba(185,191,197,0.55);
+  max-width: var(--measure);
+}
+.hands li:last-child { border-bottom: 0; }
+.hands b { font-weight: 650; }
+
+.steps { margin: 0; padding-left: 1.4rem; }
+.steps li { padding-left: 0.35rem; margin-bottom: 0.875rem; max-width: var(--measure); }
+.steps li:last-child { margin-bottom: 0; }
+.steps li b { font-weight: 650; }
+
+.pull {
+  border-left: 3px solid var(--ink);
+  padding: 0.875rem 1rem;
+  background: var(--panel);
+  font-size: var(--t-s);
+  max-width: var(--measure);
+}
+.pull p { max-width: none; }
+
+.srcs { margin: 0; padding: 0; list-style: none; font-size: var(--t-s); }
+.srcs li {
+  padding: 0.5rem 0 0.5rem 0.875rem;
+  border-left: 1px solid var(--rule);
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  max-width: var(--measure);
+}
+.srcs li b { color: var(--ink); font-weight: 650; display: block; }
+
+/* ---------- footer ---------- */
+
+footer {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink);
+  font-size: var(--t-s);
+  color: var(--muted);
+}
+footer h2 { font-size: var(--t-m); color: var(--ink); margin-bottom: 0.5rem; }
+footer section + section { margin-top: 1.75rem; }
+footer b { color: var(--ink); }
+
+.log { margin: 0; }
+.log div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 0.5rem; padding: 0.375rem 0; border-bottom: 1px solid rgba(185,191,197,0.55); }
+.log dt { font-variant-numeric: tabular-nums; }
+.log dd { margin: 0; }
+
+.disclaimer { border-top: 1px solid var(--rule); margin-top: 1.75rem; padding-top: 1rem; }
+
+/* ---------- wider screens ---------- */
+
+@media (min-width: 46rem) {
+  :root { --t-xl: 2.75rem; --t-l: 1.75rem; }
+  main { padding: 3.5rem 2rem 4rem; }
+  .tl-row { grid-template-columns: 1.25rem 19rem 1fr; gap: 0 1.25rem; }
+  .tl-date { font-size: 1.625rem; }
+  .tl-row .tl-datecol { grid-column: 2; }
+  .tl-body { grid-column: 3; }
+  .tl-date { margin-bottom: 0.25rem; }
+}
+
+/* ---------- the one orchestrated moment ---------- */
+
+@keyframes settle {
+  from { opacity: 0; transform: translateX(-3px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes railset {
+  from { transform: scaleY(0); }
+  to   { transform: none; }
+}
+@keyframes marktake {
+  0%   { transform: scale(1.9); opacity: 0; }
+  60%  { transform: scale(0.94); opacity: 1; }
+  100% { transform: none; }
+}
+
+.is-settling > * { animation: settle 300ms cubic-bezier(0.16, 0.8, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.is-settling .tl-row::before { animation: railset 420ms cubic-bezier(0.16, 0.8, 0.3, 1) both; transform-origin: top; animation-delay: 140ms; }
+.is-settling .tl-row { animation: settle 300ms cubic-bezier(0.16, 0.8, 0.3, 1) both; animation-delay: calc(120ms + var(--i, 0) * 55ms); }
+.is-settling .tl-row.is-next .tl-mark { animation: marktake 380ms cubic-bezier(0.16, 0.9, 0.25, 1) both; animation-delay: calc(260ms + var(--i, 0) * 55ms); }
+
+@media (prefers-reduced-motion: reduce) {
+  .is-settling > *,
+  .is-settling .tl-row,
+  .is-settling .tl-row::before,
+  .is-settling .tl-row.is-next .tl-mark { animation: none; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header class="masthead">
+  <h1>Find out if your crypto is reported to your tax office, and when</h1>
+
+  <p class="lede">Since 2026, crypto platforms in a growing list of countries have had to hand your identity and your transaction history to a tax authority automatically, under the OECD Crypto-Asset Reporting Framework. This page tells you whether that applies to you, which authority receives the data, and on what date.</p>
+
+  <p class="privacy"><b>Nothing you enter leaves this page.</b> There is no server, no account, and no analytics on your answers. The page loads no third-party code and makes no network requests at all. You can turn off your connection and it will still work.</p>
+</header>
+
+<form id="form" novalidate>
+
+  <fieldset>
+    <legend><label for="j">Where are you tax resident?</label></legend>
+    <p class="hint">This is the question that decides who receives your data. Your own tax residence matters more than where the exchange is based: a platform in one country reports to its own authority, which then passes your details to the authority where you live.</p>
+    <select id="j" name="j" required>
+      <option value="" selected>Choose a country or territory</option>
+    </select>
+  </fieldset>
+
+  <fieldset>
+    <legend>What have you used since 1 January 2026?</legend>
+    <p class="hint">Exchanges, brokers, dealers, most custodial wallet providers and crypto ATMs are all covered. If a business held your coins or arranged your trades, it counts.</p>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="use" value="platform" required><span><span class="opt-t">A centralised platform</span><span class="opt-d">An exchange, broker, app or custodial wallet — anywhere someone else held your coins or matched your trades.</span></span></label>
+      <label class="opt"><input type="radio" name="use" value="self"><span><span class="opt-t">Self-custody only</span><span class="opt-d">Your own keys, your own wallet, no platform involved since that date.</span></span></label>
+      <label class="opt"><input type="radio" name="use" value="none"><span><span class="opt-t">No crypto at all</span><span class="opt-d">You have not held or traded crypto since that date.</span></span></label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>How complete are your past tax returns?</legend>
+    <p class="hint">This does not change whether you are in scope. It only changes what is worth doing before the next date.</p>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="past" value="clean" required><span><span class="opt-t">Everything declared</span><span class="opt-d">You believe your crypto gains and income are all on your returns.</span></span></label>
+      <label class="opt"><input type="radio" name="past" value="unsure"><span><span class="opt-t">Not sure</span><span class="opt-d">You have traded across several years or several platforms and never fully reconciled it.</span></span></label>
+      <label class="opt"><input type="radio" name="past" value="gaps"><span><span class="opt-t">There are gaps</span><span class="opt-d">You know some gains or income were never declared.</span></span></label>
+    </div>
+  </fieldset>
+
+  <p class="err" id="err"></p>
+
+  <button type="submit">Show my dates</button>
+</form>
+
+<section class="result" id="result" aria-live="polite" tabindex="-1"></section>
+
+<footer>
+  <section>
+    <h2>How this works</h2>
+    <p>This tool matches the country you select against a small dataset of jurisdictions where a named legal instrument has been checked. It does no modelling and no estimation. It does not guess a date from a press release, a consultation, an announcement or a news report. If a country is not in the dataset, or its rules are announced but not yet law, the tool says so instead of showing dates.</p>
+    <p>Every date shown carries the instrument it comes from, so you can check it yourself.</p>
+  </section>
+
+  <section>
+    <h2>Who maintains this</h2>
+    <p id="byline"></p>
+    <p>Last updated <b id="updated"></b>. Corrections are welcome — the dataset is the product, and a wrong date is worse than a missing one.</p>
+  </section>
+
+  <section>
+    <h2>Changelog</h2>
+    <dl class="log" id="log"></dl>
+  </section>
+
+  <p class="disclaimer">This is general information about a reporting framework, not tax advice. It describes what platforms report and when. It does not tell you what you owe. For your own position, take advice from someone qualified in your country.</p>
+</footer>
+
+</main>
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     MAINTAINER — replace before publishing.
+     The byline is a trust requirement: it must name a real person
+     who stands behind the dataset and can answer for a wrong date.
+     ============================================================ */
+  var MAINTAINER = { name: '[YOUR NAME]', credentials: '[YOUR CREDENTIALS]' };
+
+  var LAST_UPDATED = '2026-09-07';
+
+  /* ============================================================
+     DATA — one record per jurisdiction.
+
+     RULE FOR MAINTAINERS: no jurisdiction may be moved to
+     status 'sourced' on the strength of a news article, a press
+     release, a consultation paper, a professional-services alert
+     or a government announcement. It takes a named legal
+     instrument that is in force — an Act, a Statutory Instrument,
+     a Directive, a Regulation, a Gazette notification — and every
+     event in the record must cite the instrument that fixes it.
+     A missing date is a smaller failure than a wrong one.
+
+     status: 'sourced'     -> the timeline is shown
+             'unconfirmed' -> the "not in the dataset" branch is
+                              shown instead, with the note below,
+                              and no dates are rendered.
+     ============================================================ */
+
+  var CARF_MCAA = 'CARF Multilateral Competent Authority Agreement, Section 3 — exchange within nine months of the end of the calendar year.';
+  var DAC8 = 'Council Directive (EU) 2023/2226 (DAC8), Article 8ad — exchange within nine months of the end of the calendar year.';
+
+  function euLate(name, authority) {
+    return name + ' is bound by DAC8, the EU directive that carries the CARF into European law, but had not put it into national law when the European Commission opened infringement proceedings against twelve member states in February 2026. What your platform must do, and by when, depends on that national law. Until a named instrument is in force we show no dates. Search ' + authority + ' for "CARF" or "DAC8".';
+  }
+
+  function euOk(name, authority) {
+    return name + ' was not among the twelve member states the European Commission named in February 2026 for failing to transpose DAC8, so it appears to have legislated. We have not yet verified the national instrument, and DAC8 leaves each country to set its own deadline for platforms to file, so we show no dates for ' + name + ' yet. Search ' + authority + ' for "CARF" or "DAC8".';
+  }
+
+  function unknown(name, authority) {
+    return 'No primary source has been verified for ' + name + '. ' +
+           (authority ? 'Search ' + authority + ' for "CARF".' : 'Search your national tax authority for "CARF".');
+  }
+
+  var DATA = {
+
+    /* ---------------- sourced ---------------- */
+
+    gb: {
+      label: 'United Kingdom',
+      status: 'sourced',
+      authority: 'HM Revenue & Customs (HMRC)',
+      receives: 'HMRC receives your data. A platform based in the UK reports to HMRC directly. A platform based abroad reports to its own authority, which passes your details to HMRC because you live here.',
+      events: [
+        { date: '2026-01-01', title: 'Collection started',
+          detail: 'UK platforms began recording your transactions and confirming which country you are tax resident in. Everything you have done on a platform since this date is in the first report.',
+          cite: 'Reporting Cryptoasset Service Providers (Due Diligence and Reporting Requirements) Regulations 2025 (SI 2025/744), in force 1 January 2026.' },
+        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+          detail: 'Platforms must hold a valid self-certification of your tax residence and taxpayer number for accounts that already existed on 1 January 2026. If you ignore the request, the platform has to stop you making reportable transactions.',
+          cite: 'SI 2025/744, due diligence requirements — twelve-month window for pre-existing users, following CARF Section IV.' },
+        { date: '2027-01-31', title: 'Platforms registered with HMRC',
+          detail: 'Every UK reporting platform has to be registered with HMRC by this date. This one is the platform’s obligation, not yours.',
+          cite: 'SI 2025/744, registration requirement.' },
+        { date: '2027-05-31', title: 'First report reaches HMRC',
+          detail: 'Platforms send HMRC everything they recorded during 2026: your identity, your totals, and your transactions asset by asset.',
+          cite: 'SI 2025/744, annual report due by 31 May following the reportable period.' },
+        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'HMRC sends data on people resident elsewhere to their own authorities, and receives data held abroad on UK residents. This is the date your foreign exchange accounts become visible here.',
+          cite: CARF_MCAA }
+      ],
+      sources: [
+        { name: 'SI 2025/744', detail: 'The Reporting Cryptoasset Service Providers (Due Diligence and Reporting Requirements) Regulations 2025, made 24 June 2025, in force 1 January 2026.' },
+        { name: 'CARF-MCAA', detail: 'Multilateral Competent Authority Agreement on Automatic Exchange of Information pursuant to the Crypto-Asset Reporting Framework.' },
+        { name: 'OECD CARF', detail: 'Crypto-Asset Reporting Framework, OECD, October 2022, as amended June and October 2023.' }
+      ]
+    },
+
+    ie: {
+      label: 'Ireland',
+      status: 'sourced',
+      authority: 'Revenue',
+      receives: 'Revenue receives your data. Platforms established in Ireland report to Revenue; platforms elsewhere in the EU report to their own authority, which sends your details to Revenue because you live here.',
+      events: [
+        { date: '2026-01-01', title: 'Collection started',
+          detail: 'Irish platforms began due diligence and started recording reportable transactions. Everything from this date onward is in the first report.',
+          cite: 'Section 891HA, Taxes Consolidation Act 1997 (inserted by section 92, Finance Act 2025) and S.I. No. 584 of 2025, applying from 1 January 2026.' },
+        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+          detail: 'Platforms must have a valid self-certification for users who were already on the books at the start of 2026.',
+          cite: 'DAC8 due diligence rules as transposed by S.I. No. 584 of 2025 — twelve-month window for pre-existing users.' },
+        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'Revenue exchanges 2026 data with the other EU member states and with CARF partner countries outside the EU.',
+          cite: DAC8 }
+      ],
+      note: 'DAC8 dropped the EU-wide 31 January filing date and left each country to set its own deadline for platforms to file with the national authority. We have not verified Ireland’s, so it is not shown here. It falls between January and September 2027.',
+      sources: [
+        { name: 'Section 891HA TCA 1997', detail: 'Inserted by section 92, Finance Act 2025.' },
+        { name: 'S.I. No. 584 of 2025', detail: 'Regulations transposing Council Directive (EU) 2023/2226 (DAC8) into Irish law.' },
+        { name: 'Council Directive (EU) 2023/2226', detail: 'DAC8, adopted 17 October 2023; applies from 1 January 2026.' }
+      ]
+    },
+
+    de: {
+      label: 'Germany',
+      status: 'sourced',
+      authority: 'Bundeszentralamt für Steuern (BZSt)',
+      receives: 'The BZSt receives your data and passes it to your local Finanzamt and to partner countries. A platform elsewhere in the EU reports to its own authority, which sends your details to the BZSt because you live here.',
+      events: [
+        { date: '2026-01-01', title: 'Collection started',
+          detail: 'German platforms began recording your transactions and verifying your tax residence and tax identification number.',
+          cite: 'Kryptowerte-Steuertransparenzgesetz (KStTG), passed 22 December 2025, in force 24 December 2025; first reporting period 2026.' },
+        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+          detail: 'For users whose relationship with the platform began on or before 31 December 2025, identification has to be complete by this date.',
+          cite: 'KStTG, §§ 4 to 6 — transitional deadline for pre-existing users.' },
+        { date: '2027-07-31', title: 'First report reaches the BZSt',
+          detail: 'Platforms file the 2026 reporting period with the BZSt. From then on the deadline is 31 July every year.',
+          cite: 'KStTG — annual report due by 31 July for the preceding reporting period.' },
+        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'The BZSt exchanges 2026 data with the other EU member states and with CARF partner countries.',
+          cite: DAC8 }
+      ],
+      sources: [
+        { name: 'KStTG', detail: 'Kryptowerte-Steuertransparenzgesetz, transposing DAC8 and the OECD CARF into German law.' },
+        { name: 'Council Directive (EU) 2023/2226', detail: 'DAC8, adopted 17 October 2023; applies from 1 January 2026.' },
+        { name: 'BMF-Schreiben, 14 January 2026', detail: 'Official dataset and interface for reports to the BZSt under the KStTG.' }
+      ]
+    },
+
+    jp: {
+      label: 'Japan',
+      status: 'sourced',
+      authority: '国税庁 — the National Tax Agency (NTA)',
+      receives: 'The NTA receives your data. Japanese platforms report to the NTA; platforms abroad report to their own authority, which passes your details to the NTA because you are resident here.',
+      events: [
+        { date: '2026-01-01', title: 'Collection started',
+          detail: 'Japanese exchanges began recording reportable transactions and collecting residence declarations from users.',
+          cite: 'FY2024 tax reform, amending the Act on Special Provisions of the Income Tax Act, the Corporation Tax Act and the Local Tax Act for the Enforcement of Tax Treaties; in force 1 January 2026.' },
+        { date: '2026-12-31', title: 'Residence notification due from existing users',
+          detail: 'If you opened your account before 2026, you have to file a notification of tax residence with the platform by this date. New accounts do it at opening. This one is your obligation, and the deadline is close.',
+          cite: 'FY2024 tax reform — transitional notification requirement for accounts opened on or before 31 December 2025.' },
+        { date: '2027-04-30', title: 'First report reaches the NTA',
+          detail: 'Platforms file the 2026 calendar year with the NTA by 30 April.',
+          cite: 'FY2024 tax reform — annual report due by 30 April following the reporting year.' },
+        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'The NTA exchanges 2026 data with partner authorities and receives data held abroad on Japanese residents.',
+          cite: CARF_MCAA }
+      ],
+      sources: [
+        { name: 'FY2024 tax reform (令和6年度税制改正)', detail: 'Introduced the Japanese CARF regime (暗号資産等取引情報の自動的交換のための報告制度), effective 1 January 2026.' },
+        { name: 'CARF-MCAA', detail: 'Multilateral Competent Authority Agreement on Automatic Exchange of Information pursuant to the Crypto-Asset Reporting Framework.' }
+      ]
+    },
+
+    sg: {
+      label: 'Singapore',
+      status: 'sourced',
+      authority: 'the Inland Revenue Authority of Singapore (IRAS)',
+      receives: 'IRAS receives your data. Singapore starts a year later than Europe: the first reporting year is 2027, not 2026.',
+      events: [
+        { date: '2026-08-11', title: 'Rules gazetted',
+          detail: 'The CARF regulations were published in the Government Gazette, fixing the dates below.',
+          cite: 'Income Tax (International Tax Compliance Agreements) (Crypto-Asset Reporting Framework) Regulations 2026, first published 11 August 2026.' },
+        { date: '2027-01-01', title: 'Collection starts',
+          detail: 'Singapore platforms begin due diligence and start recording reportable transactions. Activity before this date is not in the first report.',
+          cite: 'CARF Regulations 2026 — implementation from 1 January 2027.' },
+        { date: '2027-12-31', title: 'Your tax residence has to be on file',
+          detail: 'For users whose relationship existed at 31 December 2026, the platform must have a valid, verified self-certification by this date.',
+          cite: 'CARF Regulations 2026 — due diligence deadline for pre-existing users.' },
+        { date: '2028-01-01', title: 'Transactions blocked without it',
+          detail: 'From this date a platform generally cannot carry out relevant transactions for a pre-existing user who has not given a valid self-certification.',
+          cite: 'CARF Regulations 2026 — restriction on relevant transactions.' },
+        { date: '2028-05-31', title: 'First return reaches IRAS',
+          detail: 'Platforms file the 2027 calendar year with IRAS.',
+          cite: 'CARF Regulations 2026 — first returns for 2027 due by 31 May 2028.' },
+        { date: '2028-09-30', display: 'September 2028', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'Singapore begins exchanging crypto data with partner authorities, covering calendar year 2027. The commitment names the month, not the day.',
+          cite: 'Singapore’s CARF commitment — first exchanges in September 2028; ' + CARF_MCAA }
+      ],
+      sources: [
+        { name: 'CARF Regulations 2026', detail: 'Income Tax (International Tax Compliance Agreements) (Crypto-Asset Reporting Framework) Regulations 2026, gazetted 11 August 2026, under the Income Tax Act 1947.' },
+        { name: 'CARF-MCAA', detail: 'Multilateral Competent Authority Agreement on Automatic Exchange of Information pursuant to the Crypto-Asset Reporting Framework.' }
+      ]
+    },
+
+    us: {
+      label: 'United States',
+      status: 'sourced',
+      outside: true,
+      authority: 'the Internal Revenue Service (IRS)',
+      receives: 'The IRS receives your data, but not through the CARF. The United States has not signed the CARF exchange agreement, so there is no CARF route for your details to reach the IRS from abroad. US brokers report to the IRS directly instead, on Form 1099-DA. A platform outside the US may still ask for your details and report you to its own authority — that data simply has nowhere to go under this framework.',
+      events: [
+        { date: '2025-01-01', title: 'Broker reporting started',
+          detail: 'US digital asset brokers began recording gross proceeds from your sales.',
+          cite: 'Internal Revenue Code § 6045 and the digital asset broker final regulations published in 2024, following the Infrastructure Investment and Jobs Act 2021.' },
+        { date: '2026-01-31', display: 'Early 2026', label: 'the forms arrive', title: 'First Form 1099-DA arrived',
+          detail: 'Brokers issued the first 1099-DA forms, covering 2025 sales. Gross proceeds only — no cost basis in this first year.',
+          cite: 'Digital asset broker final regulations (2024) — gross proceeds reporting for 2025 transactions.' },
+        { date: '2026-01-01', title: 'Cost basis reporting started',
+          detail: 'For 2026 transactions in covered digital assets, brokers also have to report what you paid and when.',
+          cite: 'Digital asset broker final regulations (2024) — basis reporting for covered digital assets from 2026.' },
+        { date: '2027-01-31', display: 'Early 2027', label: 'the forms arrive', title: 'First 1099-DA with cost basis',
+          detail: 'The forms covering 2026 arrive, this time showing basis as well as proceeds. Where the broker’s basis figure differs from yours, the difference is yours to explain.',
+          cite: 'Digital asset broker final regulations (2024) — basis reporting for covered digital assets from 2026.' }
+      ],
+      sources: [
+        { name: 'IRC § 6045 and 2024 final regulations', detail: 'Gross proceeds reporting from 2025; basis reporting for covered digital assets from 2026; Form 1099-DA.' },
+        { name: 'CARF-MCAA signatory list', detail: 'The United States is not a signatory. Confirm against the OECD’s published list before relying on this.' }
+      ]
+    },
+
+    /* ---------------- announced, not law ---------------- */
+
+    ch: {
+      label: 'Switzerland',
+      status: 'unconfirmed',
+      note: 'Switzerland’s law is in force, but the crypto rules were switched off for their first year. Parliament approved extending the Automatic Exchange of Information Act to crypto-assets on 26 September 2025 and the legal basis entered into force on 1 January 2026. On 26 November 2025 the Federal Council decided the crypto provisions would not apply during 2026 while the list of 74 partner states is settled. No exchange date is fixed, so we show none. Watch the State Secretariat for International Finance (SIF) and search for "AIA Kryptowerte".'
+    },
+
+    ca: {
+      label: 'Canada',
+      status: 'unconfirmed',
+      note: 'Canada has draft legislation, not law. Finance released proposals on 15 August 2025 creating a new Part of the Income Tax Act for crypto-asset reporting, and the 2026 spring update deferred the start from 1 January 2026 to 1 January 2027. Until the legislation is enacted, the dates can still move, so we show none. Search Canada.ca and the Department of Finance for "Crypto-Asset Reporting Framework".'
+    },
+
+    au: {
+      label: 'Australia',
+      status: 'unconfirmed',
+      note: 'Australia has announced the CARF but has not legislated it. The government said in the 2025–26 Mid-Year Economic and Fiscal Outlook on 17 December 2025 that it will implement the framework along with a domestic crypto reporting regime, and the ATO states the measure is not yet law. Until it is, we show no dates. Search ato.gov.au for "Crypto Asset Reporting Framework".'
+    },
+
+    /* ---------------- EU: transposition incomplete ---------------- */
+
+    be: { label: 'Belgium',     status: 'unconfirmed', note: euLate('Belgium', 'the FPS Finance site') },
+    bg: { label: 'Bulgaria',    status: 'unconfirmed', note: euLate('Bulgaria', 'the National Revenue Agency site') },
+    cy: { label: 'Cyprus',      status: 'unconfirmed', note: euLate('Cyprus', 'the Tax Department site') },
+    cz: { label: 'Czechia',     status: 'unconfirmed', note: euLate('Czechia', 'the Financial Administration site') },
+    ee: { label: 'Estonia',     status: 'unconfirmed', note: euLate('Estonia', 'the Tax and Customs Board site') },
+    gr: { label: 'Greece',      status: 'unconfirmed', note: euLate('Greece', 'the AADE site') },
+    lu: { label: 'Luxembourg',  status: 'unconfirmed', note: euLate('Luxembourg', 'the Administration des contributions directes site') },
+    mt: { label: 'Malta',       status: 'unconfirmed', note: euLate('Malta', 'the Commissioner for Tax and Customs site') },
+    nl: { label: 'Netherlands', status: 'unconfirmed', note: euLate('the Netherlands', 'the Belastingdienst site') },
+    pl: { label: 'Poland',      status: 'unconfirmed', note: euLate('Poland', 'the Krajowa Administracja Skarbowa site') },
+    pt: { label: 'Portugal',    status: 'unconfirmed', note: euLate('Portugal', 'the Autoridade Tributária site') },
+    es: { label: 'Spain',       status: 'unconfirmed', note: euLate('Spain', 'the Agencia Tributaria site') },
+
+    /* ---------------- EU: legislated, instrument not yet verified ---------------- */
+
+    at: { label: 'Austria',   status: 'unconfirmed', note: euOk('Austria', 'the BMF site') },
+    hr: { label: 'Croatia',   status: 'unconfirmed', note: euOk('Croatia', 'the Porezna uprava site') },
+    dk: { label: 'Denmark',   status: 'unconfirmed', note: euOk('Denmark', 'the Skattestyrelsen site') },
+    fi: { label: 'Finland',   status: 'unconfirmed', note: euOk('Finland', 'the Vero site') },
+    fr: { label: 'France',    status: 'unconfirmed', note: euOk('France', 'the impots.gouv.fr site') },
+    hu: { label: 'Hungary',   status: 'unconfirmed', note: euOk('Hungary', 'the NAV site') },
+    it: { label: 'Italy',     status: 'unconfirmed', note: euOk('Italy', 'the Agenzia delle Entrate site') },
+    lv: { label: 'Latvia',    status: 'unconfirmed', note: euOk('Latvia', 'the VID site') },
+    lt: { label: 'Lithuania', status: 'unconfirmed', note: euOk('Lithuania', 'the VMI site') },
+    ro: { label: 'Romania',   status: 'unconfirmed', note: euOk('Romania', 'the ANAF site') },
+    sk: { label: 'Slovakia',  status: 'unconfirmed', note: euOk('Slovakia', 'the Finančná správa site') },
+    si: { label: 'Slovenia',  status: 'unconfirmed', note: euOk('Slovenia', 'the FURS site') },
+    se: { label: 'Sweden',    status: 'unconfirmed', note: euOk('Sweden', 'the Skatteverket site') },
+
+    /* ---------------- no primary source verified ---------------- */
+
+    br: { label: 'Brazil',        status: 'unconfirmed', note: unknown('Brazil', 'the Receita Federal site') },
+    in: { label: 'India',         status: 'unconfirmed', note: unknown('India', 'the Income Tax Department site') },
+    nz: { label: 'New Zealand',   status: 'unconfirmed', note: unknown('New Zealand', 'the Inland Revenue site') },
+    no: { label: 'Norway',        status: 'unconfirmed', note: unknown('Norway', 'the Skatteetaten site') },
+    za: { label: 'South Africa',  status: 'unconfirmed', note: unknown('South Africa', 'the SARS site') },
+    ae: { label: 'United Arab Emirates', status: 'unconfirmed', note: unknown('the United Arab Emirates', 'the Federal Tax Authority site') },
+
+    other: {
+      label: 'Somewhere else, or not listed above',
+      status: 'unconfirmed',
+      last: true,
+      note: 'We have not verified a primary source for your country, so we will not pretend to know your dates.'
+    }
+  };
+
+  var CHANGELOG = [
+    { date: '2026-09-07', text: 'First published. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
+  ];
+
+  /* ============================================================
+     Helpers
+     ============================================================ */
+
+  var ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return ESC[c]; }); }
+
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+
+  function parseDate(iso) {
+    var p = iso.split('-');
+    return Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  }
+
+  function todayUTC() {
+    var n = new Date();
+    return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate());
+  }
+
+  function dateMarkup(ev) {
+    if (ev.display) return '<span class="m">' + esc(ev.display) + '</span>';
+    var p = ev.date.split('-');
+    return '<span class="d">' + esc(String(+p[2])) + '</span> ' +
+           '<span class="m">' + esc(MONTHS[+p[1] - 1]) + '</span> ' +
+           '<span class="y">' + esc(p[0]) + '</span>';
+  }
+
+  function daysWord(n) {
+    if (n === 0) return 'Next — today';
+    if (n === 1) return 'Next — in 1 day';
+    return 'Next — in ' + n + ' days';
+  }
+
+  function longDate(iso) {
+    var p = iso.split('-');
+    return +p[2] + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0];
+  }
+
+  /* ============================================================
+     Result blocks
+     ============================================================ */
+
+  function timelineBlock(rec, heading) {
+    var today = todayUTC();
+    var evs = rec.events.slice().sort(function (a, b) { return parseDate(a.date) - parseDate(b.date); });
+
+    var nextIdx = -1;
+    for (var i = 0; i < evs.length; i++) {
+      if (parseDate(evs[i].date) >= today) { nextIdx = i; break; }
+    }
+
+    var rows = evs.map(function (ev, i) {
+      var t = parseDate(ev.date);
+      var past = t < today;
+      var isNext = i === nextIdx;
+      var cls = 'tl-row' + (past ? ' is-past' : '') + (isNext ? ' is-next' : '');
+      var tag = '';
+      if (isNext) {
+        // a month-only date carries no day count: do not imply precision it lacks
+        tag = ev.display ? 'Next' : daysWord(Math.round((t - today) / 86400000));
+      } else if (past) {
+        tag = 'Elapsed';
+      }
+
+      return '<li class="' + cls + '" style="--i:' + i + '">' +
+        '<span class="tl-mark" aria-hidden="true"></span>' +
+        '<div class="tl-datecol"><time class="tl-date" datetime="' + esc(ev.date) + '">' + dateMarkup(ev) + '</time></div>' +
+        '<div class="tl-body">' +
+          (tag ? '<span class="tl-tag">' + esc(tag) + '</span>' : '') +
+          '<p class="tl-what">' + esc(ev.title) + '</p>' +
+          '<p class="tl-detail">' + esc(ev.detail) + '</p>' +
+          '<p class="tl-cite">' + esc(ev.cite) + '</p>' +
+        '</div>' +
+      '</li>';
+    }).join('');
+
+    var allPast = nextIdx === -1;
+
+    return '<div class="block">' +
+      '<h3>' + esc(heading) + '</h3>' +
+      '<ol class="tl">' + rows + '</ol>' +
+      (rec.note ? '<p class="tl-note">' + esc(rec.note) + '</p>' : '') +
+      (allPast ? '<p class="tl-note">Every date in this record has passed. The reporting is running.</p>' : '') +
+    '</div>';
+  }
+
+  function handsBlock(outside) {
+    var items = outside ? [
+      ['Sales of digital assets', 'the amount you received, the asset, and the date.'],
+      ['Cost basis, from the 2026 tax year', 'what the broker believes you paid, and when you bought it.'],
+      ['Your identity', 'name, address and taxpayer identification number.']
+    ] : [
+      ['Sales of crypto for ordinary money', 'the amount, the asset and the date of each one.'],
+      ['Every crypto-to-crypto swap', 'each one is a separate reportable transaction, even though no money ever reached your bank.'],
+      ['Transfers in and out', 'including to and from your own private wallet — the asset, the amount, and in some cases the address.'],
+      ['Totals for each asset separately', 'gross proceeds, the number of transactions, and units transferred.'],
+      ['Retail payments through the platform', 'where a single payment is above roughly USD 50,000.'],
+      ['Your identity, verified', 'name, address, date of birth, country or countries of tax residence, and taxpayer identification number — taken from a self-certification the platform has to check against its own records.']
+    ];
+
+    var lis = items.map(function (it) {
+      return '<li><b>' + esc(it[0]) + '</b> — ' + esc(it[1]) + '</li>';
+    }).join('');
+
+    return '<div class="block">' +
+      '<h3>What the platform hands over</h3>' +
+      '<ul class="hands">' + lis + '</ul>' +
+      '<div class="pull" style="margin-top:1.25rem"><p><b>The figure is gross proceeds, not profit.</b> The platform reports what you sold for, not what you made, and it usually does not know what you paid. If you cannot show your cost basis, the number your tax office starts from is the whole amount.</p></div>' +
+    '</div>';
+  }
+
+  function actionsBlock(nextLabel) {
+    return '<div class="block">' +
+      '<h3>What to do before ' + esc(nextLabel) + '</h3>' +
+      '<ol class="steps">' +
+        '<li><b>Export your full transaction history from every platform you have used</b>, including accounts you have closed and platforms you have stopped trusting. Access disappears when a business shuts down or pulls out of your market. The report about you does not.</li>' +
+        '<li><b>Rebuild your cost basis</b>: what you paid, in your own currency, on what date, for everything you have disposed of. Crypto-to-crypto swaps count as disposals in most countries even though no cash moved. This is the part that takes weeks rather than an evening, which is why it is worth starting before the date rather than after the letter.</li>' +
+        '<li><b>Check the tax residence and taxpayer number each platform holds for you.</b> If either is wrong or missing, your data can be sent to the wrong authority or arrive somewhere it cannot be matched to you — and you are the one who has to sort it out.</li>' +
+      '</ol>' +
+    '</div>';
+  }
+
+  function gapsBlock() {
+    return '<div class="block">' +
+      '<h3>If the reconstruction turns up something</h3>' +
+      '<div class="pull">' +
+        '<p>Rebuilding cost basis often surfaces gains from earlier years that were never declared. It is a common outcome, and finding them yourself is the better version of finding out.</p>' +
+        '<p>In most countries a voluntary disclosure made before the authority has the data carries lower penalties than the same gain found afterwards — in some, substantially lower, and it can be the difference between a penalty and a prosecution. The exchange dates above are what "afterwards" means in practice.</p>' +
+        '<p>If the amounts are significant, speak to someone qualified in your own country before you file or amend anything.</p>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function sourcesBlock(rec) {
+    if (!rec.sources) return '';
+    var lis = rec.sources.map(function (s) {
+      return '<li><b>' + esc(s.name) + '</b>' + esc(s.detail) + '</li>';
+    }).join('');
+    return '<div class="block">' +
+      '<h3>Where these dates come from</h3>' +
+      '<ul class="srcs">' + lis + '</ul>' +
+    '</div>';
+  }
+
+  function unconfirmedBlock(rec) {
+    return '<div class="block">' +
+      '<h3>We do not have verified dates for ' + esc(rec.label) + '</h3>' +
+      '<p>' + esc(rec.note) + '</p>' +
+      '<div class="pull" style="margin-top:1.25rem">' +
+        '<p><b>Published counts do not agree, and that disagreement is the honest answer.</b> In June 2026 the OECD recorded 46 jurisdictions committed to report for 2026, 29 more for 2027 and one for 2028. Other tallies published during the same year put total commitments near 76.</p>' +
+        '<p>The numbers differ because committing to the framework, signing the exchange agreement and passing implementing law are three separate steps. A country can have done the first without the last, and only the last one fixes a date.</p>' +
+      '</div>' +
+      '<p style="margin-top:1.25rem">Search your national tax authority for <b>"CARF"</b>. Authorities use the English acronym even when the rest of the page is in another language. What you are looking for is a law or regulation with a commencement date, not a press release.</p>' +
+      '<p>The rest of this page still applies to you: what platforms hand over is the same everywhere. Only the dates change.</p>' +
+    '</div>';
+  }
+
+  /* ============================================================
+     Verdicts
+     ============================================================ */
+
+  function verdictBlock(rec, use) {
+    var who = '';
+    if (rec.status === 'sourced') {
+      who = '<div class="who"><span>Your data goes to</span><b>' + esc(rec.authority) + '</b>' +
+            '<p style="margin-top:0.5rem">' + esc(rec.receives) + '</p></div>';
+    }
+
+    if (use === 'none') {
+      return '<div class="verdict">' +
+        '<h2>Nothing about you is reported.</h2>' +
+        '<p>You have not used a platform and you hold no crypto, so there is nothing for anyone to hand over. This framework reports transactions, not people.</p>' +
+        '<p>If that changes, the platform verifies your tax residence when you open the account and reports your activity for the calendar year in which it happens. There is nothing to do in the meantime.</p>' +
+      '</div>';
+    }
+
+    if (use === 'self') {
+      return '<div class="verdict">' +
+        '<h2>Holding your own keys is not, by itself, reported.</h2>' +
+        '<p>Nobody reports a private wallet. There is no obligation on you, and no platform is watching an address you control.</p>' +
+        '<p>Two things usually put self-custody holders back in the picture, though. The coins in your wallet almost certainly arrived through a platform, and that platform has your verified identity. And transfers are reportable in their own right: when you move coins off a platform, the platform reports the transfer out — the asset, the amount, and in some cases the address you sent it to.</p>' +
+        '<p>A wallet that has never touched a platform is genuinely outside this. Most wallets are not that.</p>' +
+        who +
+      '</div>';
+    }
+
+    if (rec.outside) {
+      return '<div class="verdict">' +
+        '<h2>You are reported — but not under this framework.</h2>' +
+        '<p>You do not file anything extra because of the CARF, and nothing is exchanged about you under it. Your broker reports you to ' + esc(rec.authority) + ' directly, on its own schedule, and the figures arrive whether or not you file.</p>' +
+        '<p>Your own tax residence decides all of this — not where the exchange is registered, and not where its servers are.</p>' +
+        who +
+      '</div>';
+    }
+
+    if (rec.status === 'unconfirmed') {
+      return '<div class="verdict">' +
+        '<h2>You are almost certainly in scope. We cannot tell you the dates.</h2>' +
+        '<p>If you have used a centralised platform, the platform reports on you — you file nothing under this framework and you are not asked to consent. That part is the same in every country that has adopted it.</p>' +
+        '<p>What we will not do is invent your dates. ' + esc(rec.label) + ' is not in the verified dataset, for the reason set out below.</p>' +
+      '</div>';
+    }
+
+    return '<div class="verdict">' +
+      '<h2>You are in scope. You file nothing — the platforms file on you.</h2>' +
+      '<p>This is not a return you fill in, and it is not a new tax. Your platform sends your identity and your transaction history to ' + esc(rec.authority) + ' automatically. You are not asked to agree, and you are not told each time it happens.</p>' +
+      '<p>Your own tax residence decides who receives it — not where the exchange is registered, and not where its servers are. What you have declared in the past does not change any of this. It only changes what is worth doing before the next date.</p>' +
+      who +
+    '</div>';
+  }
+
+  /* ============================================================
+     Render
+     ============================================================ */
+
+  function nextLabelFor(rec) {
+    if (rec.status !== 'sourced') return 'the date lands';
+    var today = todayUTC();
+    var evs = rec.events.slice().sort(function (a, b) { return parseDate(a.date) - parseDate(b.date); });
+    var upcoming = evs.filter(function (ev) { return parseDate(ev.date) >= today; });
+    if (!upcoming.length) return 'the next annual report';
+    // The action list is pegged to the exchange date where there is one.
+    var target = null;
+    for (var i = 0; i < upcoming.length; i++) {
+      if (upcoming[i].kind === 'exchange') { target = upcoming[i]; break; }
+    }
+    if (!target) target = upcoming[0];
+    return target.label || target.display || longDate(target.date);
+  }
+
+  function build(rec, use, past) {
+    var parts = [verdictBlock(rec, use)];
+
+    if (use === 'none') {
+      if (rec.status === 'sourced') parts.push(sourcesBlock(rec));
+      return parts;
+    }
+
+    if (rec.status === 'sourced') {
+      parts.push(timelineBlock(rec, use === 'self'
+        ? 'The dates for any platform you have used'
+        : 'Your dates'));
+    } else {
+      parts.push(unconfirmedBlock(rec));
+    }
+
+    parts.push(handsBlock(!!rec.outside));
+    parts.push(actionsBlock(nextLabelFor(rec)));
+
+    if (past === 'unsure' || past === 'gaps') parts.push(gapsBlock());
+
+    parts.push(sourcesBlock(rec));
+    return parts;
+  }
+
+  /* ============================================================
+     Wiring
+     ============================================================ */
+
+  var form = document.getElementById('form');
+  var sel = document.getElementById('j');
+  var errEl = document.getElementById('err');
+  var out = document.getElementById('result');
+
+  // Populate the country list: alphabetical, catch-all last.
+  var keys = Object.keys(DATA);
+  var last = keys.filter(function (k) { return DATA[k].last; });
+  var rest = keys.filter(function (k) { return !DATA[k].last; }).sort(function (a, b) {
+    return DATA[a].label.localeCompare(DATA[b].label, 'en');
+  });
+  rest.concat(last).forEach(function (k) {
+    var o = document.createElement('option');
+    o.value = k;
+    o.textContent = DATA[k].label;
+    sel.appendChild(o);
+  });
+
+  // Footer
+  document.getElementById('byline').innerHTML =
+    'Maintained by <b>' + esc(MAINTAINER.name) + '</b>, ' + esc(MAINTAINER.credentials) +
+    '. The dataset is checked by hand against primary legal sources. No jurisdiction is added to it on the strength of a news report.';
+  document.getElementById('updated').textContent = longDate(LAST_UPDATED);
+
+  var log = document.getElementById('log');
+  log.innerHTML = CHANGELOG.map(function (c) {
+    return '<div><dt>' + esc(longDate(c.date)) + '</dt><dd>' + esc(c.text) + '</dd></div>';
+  }).join('');
+
+  function reduced() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var use = form.querySelector('input[name="use"]:checked');
+    var past = form.querySelector('input[name="past"]:checked');
+    var missing = [];
+    if (!sel.value) missing.push('where you are tax resident');
+    if (!use) missing.push('what you have used since 1 January 2026');
+    if (!past) missing.push('how complete your past returns are');
+
+    if (missing.length) {
+      var listed = missing.length === 1 ? missing[0]
+        : missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1];
+      errEl.innerHTML = '<b>Three answers are needed.</b> Still to choose: ' + esc(listed) + '.';
+      out.innerHTML = '';
+      out.classList.remove('is-settling');
+      (!sel.value ? sel : (!use ? form.querySelector('input[name="use"]')
+                                : form.querySelector('input[name="past"]'))).focus();
+      return;
+    }
+
+    errEl.innerHTML = '';
+
+    var rec = DATA[sel.value];
+    var parts = build(rec, use.value, past.value);
+
+    out.classList.remove('is-settling');
+    out.innerHTML = parts.join('');
+    Array.prototype.forEach.call(out.children, function (el, i) {
+      el.style.setProperty('--i', i);
+    });
+
+    // The one orchestrated moment: the reading settling.
+    void out.offsetWidth;
+    out.classList.add('is-settling');
+
+    out.focus({ preventScroll: true });
+    out.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' });
+  });
+})();
+</script>
+</body>
+</html>
