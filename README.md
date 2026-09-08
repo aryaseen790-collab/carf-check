@@ -7,8 +7,11 @@ build step. Deploy it to any static host as it is.
 
 ## The interface
 
-An inverted read-out: dark cool ground, one amber accent, six palette values. The result is
-assembled from plates:
+An inverted read-out: dark cool ground, one amber accent, six palette values. Type is
+Space Grotesk for display and Inter for text, both subset and embedded in the file — see
+FONTS.md. The page opens on a full-height hero carrying a wireframe globe drawn in canvas,
+with the exchange routes of the dataset's own jurisdictions travelling across it. Below
+that, the result is assembled from plates:
 
 - **Data path** — a canvas diagram of the journey your record makes, from the platform to
   its own authority, across the border, to yours. It lays out vertically under 560px and
@@ -20,7 +23,13 @@ assembled from plates:
   countdown to the next dated event. Ticks are in memory only: no storage, and the page
   says so where the reader can see it.
 
-Two rules hold the design together. The amber accent marks the next upcoming date and
+One rule about motion is structural rather than stylistic: **entrance animations are
+opt-in**. Every element is visible by default, and the script adds `body.anim` only once it
+knows motion is wanted. A stalled animation frame can therefore never leave the content
+invisible, which is the usual way an animated page fails. The scroll reveals carry a
+four-second failsafe for the same reason. Keep that shape if you add animation.
+
+Two more rules hold the design together. The amber accent marks the next upcoming date and
 readiness state, nothing else — its scarcity is what makes it read as a signal. And every
 effect is switchable: `prefers-reduced-motion` turns depth, animation and the canvas loop
 off automatically, and a visible control in the header does the same for anyone else. Keep
