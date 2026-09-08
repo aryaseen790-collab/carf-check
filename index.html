@@ -292,6 +292,18 @@ button:hover { background: #1d2830; }
 }
 .pull p { max-width: none; }
 
+.share-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-top: 1.125rem; }
+.btn-2 {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-size: var(--t-s);
+  padding: 0.55rem 1.1rem;
+  min-height: 2.75rem;
+}
+.btn-2:hover { background: var(--ink); color: var(--panel); }
+.share-url { font-size: var(--t-s); color: var(--muted); word-break: break-all; }
+
 .srcs { margin: 0; padding: 0; list-style: none; font-size: var(--t-s); }
 .srcs li {
   padding: 0.5rem 0 0.5rem 0.875rem;
@@ -421,7 +433,7 @@ footer b { color: var(--ink); }
   <section>
     <h2>Who maintains this</h2>
     <p id="byline"></p>
-    <p>Last updated <b id="updated"></b>. Corrections are welcome — the dataset is the product, and a wrong date is worse than a missing one.</p>
+    <p>Last updated <b id="updated"></b>. Corrections are welcome — the dataset is the product, and a wrong date is worse than a missing one.<span id="contact"></span></p>
   </section>
 
   <section>
@@ -442,9 +454,18 @@ footer b { color: var(--ink); }
      The byline is a trust requirement: it must name a real person
      who stands behind the dataset and can answer for a wrong date.
      ============================================================ */
-  var MAINTAINER = { name: '[YOUR NAME]', credentials: '[YOUR CREDENTIALS]' };
+  var MAINTAINER = {
+    name: 'Arya Seen',
+    // Optional. A qualification carries weight with this audience; leave it
+    // empty rather than claiming one, and the byline simply omits it.
+    credentials: ''
+  };
 
-  var LAST_UPDATED = '2026-09-07';
+  // Correction channel shown in the footer. Left as a placeholder: fill it in
+  // with an address you are happy to publish, or the line stays inert.
+  var CONTACT = '[YOUR EMAIL]';
+
+  var LAST_UPDATED = '2026-09-08';
 
   /* ============================================================
      DATA — one record per jurisdiction.
@@ -560,6 +581,32 @@ footer b { color: var(--ink); }
         { name: 'KStTG', detail: 'Kryptowerte-Steuertransparenzgesetz, transposing DAC8 and the OECD CARF into German law.' },
         { name: 'Council Directive (EU) 2023/2226', detail: 'DAC8, adopted 17 October 2023; applies from 1 January 2026.' },
         { name: 'BMF-Schreiben, 14 January 2026', detail: 'Official dataset and interface for reports to the BZSt under the KStTG.' }
+      ]
+    },
+
+    dk: {
+      label: 'Denmark',
+      status: 'sourced',
+      authority: 'Skattestyrelsen',
+      receives: 'Skattestyrelsen receives your data. A platform elsewhere in the EU reports to its own authority, which sends your details to Skattestyrelsen because you live here.',
+      events: [
+        { date: '2026-01-01', title: 'Collection started',
+          detail: 'Platforms serving Danish residents began verifying identity, tax residence and tax number, and recording every exchange transaction and every transfer in or out.',
+          cite: 'Law No. 409 of 2025, implementing DAC8 and the OECD CARF, with Executive Order No. 1155 of 2025; applying from 1 January 2026.' },
+        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+          detail: 'Platforms must hold a valid self-certification for users who were already on the books at the start of 2026.',
+          cite: 'DAC8 due diligence rules as implemented by Executive Order No. 1155 of 2025 — twelve-month window for pre-existing users.' },
+        { date: '2027-01-31', title: 'First report reaches Skattestyrelsen',
+          detail: 'Denmark set an early national filing date rather than taking the full year DAC8 allows: platforms file the whole of 2026 by the end of January. Skattestyrelsen has said its reporting system will be ready that month.',
+          cite: 'Executive Order No. 1155 of 2025 — annual report due 31 January following the calendar year.' },
+        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+          detail: 'Skattestyrelsen exchanges 2026 data with the other EU member states and with CARF partner countries, and receives what they hold on Danish residents.',
+          cite: DAC8 }
+      ],
+      sources: [
+        { name: 'Law No. 409 of 2025', detail: 'Danish implementation of Council Directive (EU) 2023/2226 (DAC8) and the OECD Crypto-Asset Reporting Framework; generally in force 1 May 2025.' },
+        { name: 'Executive Order No. 1155 of 2025', detail: 'Reporting obligations for crypto-asset service providers, published in the Danish Official Gazette on 2 October 2025.' },
+        { name: 'Council Directive (EU) 2023/2226', detail: 'DAC8, adopted 17 October 2023; applies from 1 January 2026.' }
       ]
     },
 
@@ -684,7 +731,6 @@ footer b { color: var(--ink); }
 
     at: { label: 'Austria',   status: 'unconfirmed', note: euOk('Austria', 'the BMF site') },
     hr: { label: 'Croatia',   status: 'unconfirmed', note: euOk('Croatia', 'the Porezna uprava site') },
-    dk: { label: 'Denmark',   status: 'unconfirmed', note: euOk('Denmark', 'the Skattestyrelsen site') },
     fi: { label: 'Finland',   status: 'unconfirmed', note: euOk('Finland', 'the Vero site') },
     fr: { label: 'France',    status: 'unconfirmed', note: euOk('France', 'the impots.gouv.fr site') },
     hu: { label: 'Hungary',   status: 'unconfirmed', note: euOk('Hungary', 'the NAV site') },
@@ -714,7 +760,8 @@ footer b { color: var(--ink); }
   };
 
   var CHANGELOG = [
-    { date: '2026-09-07', text: 'First published. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
+    { date: '2026-09-08', text: 'Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
+    { date: '2026-09-07', text: 'First build. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
   ];
 
   /* ============================================================
@@ -862,6 +909,18 @@ footer b { color: var(--ink); }
     '</div>';
   }
 
+  function shareBlock() {
+    var web = location.protocol === 'http:' || location.protocol === 'https:';
+    return '<div class="block">' +
+      '<h3>If someone you know is in the same position</h3>' +
+      '<p>Most people find out about this from a platform email that explains almost nothing, or from a stranger on a forum who has the dates wrong. Send them the page instead of the summary.</p>' +
+      '<div class="share-row">' +
+        '<button type="button" class="btn-2" data-copy>Copy link</button>' +
+        (web ? '<span class="share-url" data-url>' + esc(location.href) + '</span>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
   function unconfirmedBlock(rec) {
     return '<div class="block">' +
       '<h3>We do not have verified dates for ' + esc(rec.label) + '</h3>' +
@@ -953,6 +1012,7 @@ footer b { color: var(--ink); }
 
     if (use === 'none') {
       if (rec.status === 'sourced') parts.push(sourcesBlock(rec));
+      parts.push(shareBlock());
       return parts;
     }
 
@@ -970,6 +1030,7 @@ footer b { color: var(--ink); }
     if (past === 'unsure' || past === 'gaps') parts.push(gapsBlock());
 
     parts.push(sourcesBlock(rec));
+    parts.push(shareBlock());
     return parts;
   }
 
@@ -997,9 +1058,16 @@ footer b { color: var(--ink); }
 
   // Footer
   document.getElementById('byline').innerHTML =
-    'Maintained by <b>' + esc(MAINTAINER.name) + '</b>, ' + esc(MAINTAINER.credentials) +
+    'Maintained by <b>' + esc(MAINTAINER.name) + '</b>' +
+    (MAINTAINER.credentials ? ', ' + esc(MAINTAINER.credentials) : '') +
     '. The dataset is checked by hand against primary legal sources. No jurisdiction is added to it on the strength of a news report.';
   document.getElementById('updated').textContent = longDate(LAST_UPDATED);
+
+  // The correction line only appears once CONTACT holds a real address.
+  if (CONTACT.indexOf('@') > 0) {
+    document.getElementById('contact').innerHTML =
+      ' Send one to <a href="mailto:' + esc(CONTACT) + '">' + esc(CONTACT) + '</a>.';
+  }
 
   var log = document.getElementById('log');
   log.innerHTML = CHANGELOG.map(function (c) {
@@ -1009,6 +1077,36 @@ footer b { color: var(--ink); }
   function reduced() {
     return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
+
+  function selectUrl() {
+    var el = out.querySelector('[data-url]');
+    if (!el || !window.getSelection || !document.createRange) return false;
+    var r = document.createRange();
+    r.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+    return true;
+  }
+
+  // Clipboard only — nothing is sent anywhere.
+  out.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-copy]') : null;
+    if (!btn) return;
+    var restore = function (msg) {
+      btn.textContent = msg;
+      setTimeout(function () { btn.textContent = 'Copy link'; }, 3000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).then(function () {
+        restore('Link copied');
+      }, function () {
+        restore(selectUrl() ? 'Selected — copy it now' : 'Copy it from the address bar');
+      });
+    } else {
+      restore(selectUrl() ? 'Selected — copy it now' : 'Copy it from the address bar');
+    }
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();

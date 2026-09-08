@@ -2,9 +2,12 @@
 
 Check this list against primary sources before publication. Two things to know first:
 
-1. **The byline is a placeholder.** `MAINTAINER` at the top of the script in `index.html`
-   reads `[YOUR NAME]` / `[YOUR CREDENTIALS]`. The named author is a trust requirement and
-   cannot be invented — set it to a real person who will stand behind the dataset.
+1. **The byline is set to Arya Seen; the credentials field is empty and the contact address
+   is still a placeholder.** Both live at the top of the script in `index.html`. A
+   qualification after the name carries real weight with this audience — add one if you
+   have it, rather than leaving it off. `CONTACT` reads `[YOUR EMAIL]`, and the footer's
+   correction line stays inert until it holds a real address, so nothing personal is
+   published by accident.
 2. **Everything below was assembled from secondary sources** (tax-authority summaries,
    professional-services alerts, legislative trackers, national press) reached through
    web search. Direct access to `legislation.gov.uk`, `gov.uk`, `oecd.org` and similar
@@ -13,8 +16,9 @@ Check this list against primary sources before publication. Two things to know f
    check is a short job. Rows flagged **[VERIFY FIRST]** are the ones where a wrong date
    would do the most damage or where sources disagreed.
 
-Dataset date: 7 September 2026. Twenty-five EU member states and eleven other jurisdictions are
-deliberately recorded as `unconfirmed`; they render the "no verified dates" branch.
+Dataset date: 8 September 2026. Seven jurisdictions render dates. Twenty-four EU member
+states, nine other jurisdictions and a catch-all are deliberately recorded as
+`unconfirmed`; they render the "no verified dates" branch.
 
 ---
 
@@ -57,6 +61,22 @@ force 24 December 2025); **DAC8**; BMF circular of 14 January 2026 (dataset and 
 | 1 January 2027 | Identification complete for users on the books at 31 Dec 2025 | KStTG §§ 4–6 transitional rule, as reported. Confirm the section numbers. |
 | 31 July 2027 | First report to the BZSt | **[VERIFY FIRST]** Reported consistently in German commentary, but it differs from other member states (Denmark files 31 January). Confirm the KStTG section that fixes 31 July. |
 | 30 September 2027 | First exchange | DAC8 Article 8ad. |
+
+## Denmark — `status: sourced`
+
+Instruments: **Law No. 409 of 2025** (Danish implementation of DAC8 and the OECD CARF,
+generally in force 1 May 2025); **Executive Order No. 1155 of 2025**, published in the
+Danish Official Gazette on 2 October 2025; **DAC8**.
+
+| Date shown | Event | Where it came from |
+|---|---|---|
+| 1 January 2026 | Collection starts | Law No. 409/2025 and Executive Order No. 1155/2025, as reported by Danish and international practitioner commentary. **[VERIFY FIRST]** Confirm the law number and the commencement provision — the law itself came into force 1 May 2025 but the reporting obligations run from 1 January 2026, and that distinction must be right. |
+| 1 January 2027 | Self-certification for pre-existing users | DAC8 twelve-month window as implemented. Confirm in the Executive Order. |
+| 31 January 2027 | First report to Skattestyrelsen | Reported consistently: Denmark set its own 31 January deadline rather than using the full year DAC8 now allows. This is the earliest filing date in the dataset. Confirm the section of Executive Order No. 1155/2025 that fixes it. |
+| 30 September 2027 | First exchange | DAC8 Article 8ad. |
+
+Skattestyrelsen has said its reporting system will be ready in January 2027; that statement
+is context in the event text, not a date the tool renders.
 
 ## Japan — `status: sourced`
 
@@ -110,7 +130,7 @@ OECD's published signatory list at the date of publication.
 | Canada | Draft proposals of 15 August 2025 (new Part of the Income Tax Act); start deferred from 1 January 2026 to 1 January 2027 in the 2026 spring update. Not enacted. |
 | Australia | Announced in the 2025–26 MYEFO on 17 December 2025; the ATO states the measure is not yet law. |
 | Belgium, Bulgaria, Cyprus, Czechia, Estonia, Greece, Luxembourg, Malta, Netherlands, Poland, Portugal, Spain | The twelve member states the European Commission named in February 2026 for failing to transpose DAC8. Obligations depend on national law that was not yet in force. |
-| Austria, Croatia, Denmark, Finland, France, Hungary, Italy, Latvia, Lithuania, Romania, Slovakia, Slovenia, Sweden | Not among the twelve named, so they appear to have transposed — but the national instrument and the nationally-set filing deadline were not verified. Denmark is the closest to promotion: its 31 January deadline is reported, the instrument is not named here. |
+| Austria, Croatia, Finland, France, Hungary, Italy, Latvia, Lithuania, Romania, Slovakia, Slovenia, Sweden | Not among the twelve named, so they appear to have transposed — but the national instrument and the nationally-set filing deadline were not verified. Each needs the same treatment Denmark got: find the instrument, find the nationally-set filing date, then promote. |
 | Brazil, India, New Zealand, Norway, South Africa, United Arab Emirates | No primary source verified. |
 | "Somewhere else, or not listed above" | Catch-all. |
 
