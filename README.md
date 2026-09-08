@@ -5,6 +5,27 @@ OECD Crypto-Asset Reporting Framework, which tax authority receives their data, 
 date. `index.html` is the whole product — inline CSS and JavaScript, no dependencies, no
 build step. Deploy it to any static host as it is.
 
+## The interface
+
+An inverted read-out: dark cool ground, one amber accent, six palette values. The result is
+assembled from plates:
+
+- **Data path** — a canvas diagram of the journey your record makes, from the platform to
+  its own authority, across the border, to yours. It lays out vertically under 560px and
+  horizontally above. Packets animate; under reduced motion it draws one static frame.
+- **Fixed dates** — the timeline, rendered with real depth (CSS 3D). Plates settle forward
+  on entry, lift on hover or keyboard focus, and the stack tilts a few degrees with a fine
+  pointer. Text stays selectable DOM text throughout.
+- **Readiness** — the three actions as tracked steps with a progress ring and a live
+  countdown to the next dated event. Ticks are in memory only: no storage, and the page
+  says so where the reader can see it.
+
+Two rules hold the design together. The amber accent marks the next upcoming date and
+readiness state, nothing else — its scarcity is what makes it read as a signal. And every
+effect is switchable: `prefers-reduced-motion` turns depth, animation and the canvas loop
+off automatically, and a visible control in the header does the same for anyone else. Keep
+both working when you change anything here.
+
 The closing block invites the reader to pass the page on, and its copy control uses the
 clipboard API only — still no network, no storage, no third party.
 

@@ -16,6 +16,9 @@ Check this list against primary sources before publication. Two things to know f
    check is a short job. Rows flagged **[VERIFY FIRST]** are the ones where a wrong date
    would do the most damage or where sources disagreed.
 
+The September 2026 interface rebuild changed no date, no instrument and no status in the
+dataset — only how they are drawn. This note still describes what the tool renders.
+
 Dataset date: 8 September 2026. Seven jurisdictions render dates. Twenty-four EU member
 states, nine other jurisdictions and a catch-all are deliberately recorded as
 `unconfirmed`; they render the "no verified dates" branch.
