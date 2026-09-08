@@ -42,6 +42,15 @@ It makes no network requests, loads no third-party code, and uses no cookies or 
 the claim on the page that nothing entered leaves the page is literally true. Keep it that
 way: adding an analytics snippet or a web font would make the page lie.
 
+## Before you push
+
+Run `./check.sh`. The script is inline in a single HTML file, so one stray character in a
+string literal takes the entire page down — no options in the select, no hero, no submit
+handler, and nothing visible in the console unless you open it. That has already happened
+once. The script parses the JavaScript, confirms the page still makes no network or storage
+calls, and drives it in headless Chromium to check the country list populates, the globe
+paints and every jurisdiction renders a result.
+
 ## Before publishing
 
 1. `MAINTAINER.name` is set to Arya Seen. `MAINTAINER.credentials` is empty — add a
