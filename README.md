@@ -30,6 +30,27 @@ A fixed background canvas (`#field`) drifts behind all of it, a nav appears once
 is behind you, and a scroll progress line runs along the top. That continuity is the point:
 the page should not feel like a landing page bolted to a form.
 
+### Layout
+
+Nothing below the hero sits in a single centred column. `.wrap-w` (82rem) is the section
+shell and the content inside it is deliberately asymmetric: statement left / facts right in
+the trust section, heading left / stages right in the explainer, answer rail left / question
+right in the form, result left / standing panel right. Text still wraps at a readable
+measure via `.col-t` and `min-width: 0` on grid children, which is what stops the wide
+result from overflowing.
+
+Watch for one recurring trap: several of these are two-column grids whose *content* is more
+than two elements. Wrap the text in a `div` (`.stage-b`, `.tile-b`) or the third child lands
+back in the narrow first column. That bug shipped twice during this build.
+
+### Scroll
+
+`#how` is a 220vh pinned section: `.pin-in` sticks while the three stages light in sequence
+from scroll progress, with a stage counter. Below 62rem it falls back to an
+IntersectionObserver lighting each stage as it arrives. The hero ticker scrolls the real
+dataset (each sourced jurisdiction and its next date), the watermark numerals parallax, and
+headings reveal with a clip-path wipe rather than a fade.
+
 ## The interface
 
 An inverted read-out: dark cool ground, one amber accent, six palette values. Type is
