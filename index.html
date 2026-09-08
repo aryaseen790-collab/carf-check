@@ -89,6 +89,8 @@ a:hover { color: var(--signal); }
 
 /* ---------- scroll progress ---------- */
 
+section[id], footer[id] { scroll-margin-top: 4.5rem; }
+
 .prog {
   position: fixed;
   top: 0; left: 0;
@@ -445,7 +447,10 @@ canvas.flow { display: block; width: 100%; height: auto; }
   line-height: 1.02;
 }
 .tl-date .d { display: inline-block; width: 2ch; text-align: right; }
-.tl-date .m { display: inline-block; min-width: 9.4ch; }
+.tl-date .m { display: inline-block; }
+/* the year only needs its own column where the date sits beside the text */
+@media (min-width: 46rem) { .tl-date .m { min-width: 8.5ch; } }
+@media (max-width: 45.99rem) { .tl-date { font-size: clamp(1.3rem, 5.8vw, 1.5rem); } }
 .tl-row.is-next .tl-date { color: var(--signal); }
 
 .tl-tag {
@@ -574,6 +579,227 @@ footer b { color: var(--text); }
   .mf { grid-template-columns: 1fr 1fr; }
 }
 
+
+/* ============================================================
+   Immersive layer: one environment from the hero to the footer
+   ============================================================ */
+
+/* the field: a fixed constellation behind the whole page */
+.field {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1200ms ease-out;
+}
+.field.lit { opacity: 1; }
+main { position: relative; z-index: 1; }
+.hero { z-index: 1; }
+body::before { display: none; }
+
+/* ---------- nav ---------- */
+
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.125rem;
+  background: linear-gradient(180deg, rgba(5, 8, 11, 0.94), rgba(5, 8, 11, 0.82));
+  border-bottom: 1px solid var(--edge);
+  transform: translateY(-110%);
+  transition: transform 360ms var(--ease);
+}
+.nav.on { transform: none; }
+.nav-b { font-family: var(--fd); font-weight: 700; letter-spacing: -0.03em; font-size: 1rem; text-decoration: none; }
+.nav-b i { display: inline-block; width: 8px; height: 8px; background: var(--signal); margin-right: 0.55rem; vertical-align: 1px; }
+.nav-l { display: flex; gap: 0.25rem; }
+.nav-l a { font-size: var(--t-s); color: var(--dim); text-decoration: none; padding: 0.4rem 0.7rem; border-radius: 999px; }
+.nav-l a:hover { color: var(--text); background: rgba(226, 234, 241, 0.06); }
+.nav-l a.go-l { color: var(--void); background: var(--signal); font-weight: 600; }
+.nav-l a.go-l:hover { color: var(--void); filter: brightness(1.08); }
+@media (max-width: 40rem) { .nav-l a:not(.go-l) { display: none; } }
+
+/* ---------- section scaffolding ---------- */
+
+.sec { position: relative; padding: 6rem 0; }
+.sec::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.sec-h { margin-bottom: 2.5rem; }
+.sec-n {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--fd);
+  font-size: var(--t-s);
+  font-weight: 600;
+  color: var(--signal);
+  margin-bottom: 1rem;
+}
+.sec-n::after { content: ""; display: block; width: 3rem; height: 1px; background: var(--signal); opacity: 0.6; }
+.sec-h h2 { font-size: clamp(1.875rem, 6.4vw, 3rem); letter-spacing: -0.04em; margin-bottom: 0.875rem; max-width: 20ch; }
+.sec-h p { color: var(--dim); font-size: clamp(1rem, 3vw, 1.125rem); max-width: 56ch; }
+
+.aura-1::before { background: radial-gradient(60% 50% at 80% 20%, rgba(255, 176, 32, 0.07), transparent 70%); }
+.aura-2::before { background: radial-gradient(55% 45% at 10% 60%, rgba(143, 162, 177, 0.07), transparent 70%); }
+.aura-3::before { background: radial-gradient(50% 50% at 85% 85%, rgba(255, 176, 32, 0.05), transparent 70%); }
+
+/* ---------- privacy strip ---------- */
+
+.tiles, .pipe { perspective: 1100px; }
+.tiles { display: grid; gap: 1px; background: var(--edge); border: 1px solid var(--edge); border-radius: 6px; overflow: hidden; }
+.tile { position: relative; background: var(--deck); padding: 1.5rem 1.375rem; overflow: hidden; }
+.tile { transition: border-color 300ms var(--ease), background 300ms var(--ease); }
+.tiles:hover .tile { background: #0a1016; }
+.tiles .tile:hover { background: #101a22; }
+.tile b { display: block; font-family: var(--fd); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.4rem; }
+.tile p { font-size: var(--t-s); color: var(--dim); max-width: none; }
+.tile .g {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem; height: 2.75rem;
+  border: 1px solid var(--ctl);
+  border-radius: 8px;
+  margin-bottom: 1.125rem;
+  color: var(--signal);
+}
+.tile .g svg { width: 1.375rem; height: 1.375rem; display: block; }
+@media (min-width: 46rem) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+
+/* ---------- mechanism: collect, report, exchange ---------- */
+
+.pipe { position: relative; display: grid; gap: 1rem; }
+.stage {
+  position: relative;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(226, 234, 241, 0.05), rgba(226, 234, 241, 0.012)), var(--deck);
+  padding: 1.5rem 1.375rem 1.625rem;
+  transition: transform 400ms var(--ease), border-color 300ms var(--ease);
+}
+.stage:hover { border-color: var(--dim); }
+.stage-n {
+  font-family: var(--fd);
+  font-size: clamp(2.75rem, 9vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(226, 234, 241, 0.45);
+  margin-bottom: 1rem;
+}
+.stage.lit .stage-n { color: var(--signal); -webkit-text-stroke: 0; }
+.stage b { display: block; font-family: var(--fd); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+.stage p { font-size: var(--t-s); color: var(--dim); max-width: none; }
+.stage .when { display: inline-block; margin-top: 0.875rem; font-size: var(--t-xs); font-weight: 600; color: var(--text); border: 1px solid var(--ctl); border-radius: 999px; padding: 0.2rem 0.65rem; }
+.stage.lit .when { color: var(--signal); border-color: rgba(255, 176, 32, 0.5); }
+
+.pipe-rail { display: none; }
+@media (min-width: 46rem) {
+  .pipe { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; padding-top: 1.75rem; }
+  .pipe-rail {
+    display: block;
+    position: absolute;
+    left: 16.6%; right: 16.6%; top: 0;
+    height: 1px;
+    background: var(--edge);
+    overflow: hidden;
+  }
+  .pipe-rail::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -30%;
+    width: 30%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--signal), transparent);
+  }
+  body.anim .pipe-rail::after { animation: pulse-x 3.6s linear infinite; }
+  .stage::before {
+    content: "";
+    position: absolute;
+    top: -1.75rem; left: 50%;
+    width: 1px; height: 1.75rem;
+    background: var(--edge);
+  }
+}
+@keyframes pulse-x { from { left: -30%; } to { left: 100%; } }
+
+/* ---------- form: answered progress ---------- */
+
+.fbar { height: 2px; background: var(--edge); border-radius: 2px; margin: 0 0 2.5rem; overflow: hidden; }
+.fbar i { display: block; height: 100%; width: 0; background: var(--signal); transition: width 500ms var(--ease); }
+fieldset { margin-bottom: 2.25rem; }
+
+/* ---------- result plates, numbered ---------- */
+
+.result { counter-reset: plate; }
+.result .plate { padding: 1.75rem 1.375rem; }
+.result .plate .cap { display: flex; align-items: center; gap: 0.75rem; }
+.result .plate .cap::before {
+  counter-increment: plate;
+  content: counter(plate, decimal-leading-zero);
+  font-family: var(--fd);
+  font-weight: 700;
+  color: var(--text);
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+  padding: 0.1rem 0.45rem;
+}
+.result .plate > h2, .result .plate > h3 { font-size: clamp(1.5rem, 5.4vw, 2rem); letter-spacing: -0.035em; }
+.plate { transition: border-color 300ms var(--ease), transform 500ms var(--ease); }
+.plate:hover { border-color: rgba(143, 162, 177, 0.55); }
+[data-tilt] { transform-style: preserve-3d; will-change: transform; }
+
+/* timeline rail that fills as you scroll through it */
+.tl-stage { position: relative; padding-left: 1.5rem; }
+.tl-rail { position: absolute; left: 0.4rem; top: 0.75rem; bottom: 0.75rem; width: 2px; background: var(--edge); border-radius: 2px; }
+.tl-rail i { display: block; width: 100%; height: var(--fill, 0%); background: var(--signal); border-radius: 2px; transition: height 200ms linear; }
+.tl-row::after {
+  content: "";
+  position: absolute;
+  left: calc(-1.5rem + 0.4rem - 3px);
+  top: 1.625rem;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--void);
+  border: 2px solid var(--dim);
+}
+.tl-row.is-next::after { border-color: var(--signal); background: var(--signal); box-shadow: 0 0 0 4px rgba(255, 176, 32, 0.18); }
+.tl-row.is-past::after { border-color: var(--edge); background: var(--edge); }
+@media (min-width: 46rem) { .tl-stage { padding-left: 2rem; } .tl-row::after { left: calc(-2rem + 0.4rem - 3px); } }
+
+/* ---------- footer as a closing scene ---------- */
+
+footer { position: relative; padding: 5rem 0 4rem; border-top: 1px solid var(--edge); }
+footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(70% 60% at 50% 100%, rgba(255, 176, 32, 0.06), transparent 70%);
+}
+.foot-big { font-family: var(--fd); font-size: clamp(1.75rem, 6vw, 2.75rem); font-weight: 700; letter-spacing: -0.04em; line-height: 1.05; max-width: 18ch; margin-bottom: 3rem; color: var(--text); }
+.foot-big span { color: var(--dim); }
+.foot-grid { display: grid; gap: 2.25rem; }
+@media (min-width: 46rem) { .foot-grid { grid-template-columns: 1.2fr 1fr; gap: 3rem; } }
+
+/* effects off */
+body.no-fx .pipe-rail::after, body.no-fx .tile::after { animation: none; transition: none; }
+body.no-fx [data-tilt] { transform: none !important; }
+body.no-fx .nav { transition: none; }
+body.no-fx .field { transition: none; }
+
 /* ---------- motion ---------- */
 
 @keyframes word-in { from { opacity: 0; transform: translateY(0.5em) rotateX(-45deg); } to { opacity: 1; transform: none; } }
@@ -594,8 +820,10 @@ body.anim .hero .hero-cta { animation-delay: 540ms; }
 body.anim .hero .stats { animation-delay: 650ms; }
 body.anim .cue { animation: cue-fade 3.2s ease-in-out infinite; }
 
-body.anim .rv { opacity: 0; transform: translateY(22px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
-body.anim .rv.in { opacity: 1; transform: none; }
+/* the hidden state carries no transition, so arming it cannot flash;
+   only the reveal animates */
+body.rv-on .rv { opacity: 0; transform: translateY(22px); }
+body.rv-on .rv.in { opacity: 1; transform: none; transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
 .rv-2 { transition-delay: 90ms; }
 .rv-3 { transition-delay: 180ms; }
 
@@ -637,6 +865,15 @@ body.no-fx .hero-c { transition: none; }
 </head>
 <body>
 <div class="prog" id="prog" aria-hidden="true"></div>
+<canvas class="field" id="field" aria-hidden="true"></canvas>
+<nav class="nav" id="nav" aria-label="Page">
+  <a class="nav-b" href="#hero"><i aria-hidden="true"></i>CARF check</a>
+  <div class="nav-l">
+    <a href="#how">How it works</a>
+    <a href="#sources">Sources</a>
+    <a class="go-l" href="#form">Check my exposure</a>
+  </div>
+</nav>
 
 <main>
 
@@ -666,21 +903,48 @@ body.no-fx .hero-c { transition: none; }
   <div class="cue" aria-hidden="true"><span>Start</span><i></i></div>
 </section>
 
-<section class="sec" id="about">
+<section class="sec aura-1" id="about">
   <div class="wrap">
-    <p class="privacy rv"><b>Nothing you enter leaves this page.</b> There is no server, no account, and no analytics on your answers. The page loads no third-party code and makes no network requests at all — the typefaces are built into the file. You can turn off your connection and it will still work.</p>
-    <button type="button" class="fx rv rv-2" id="fx" aria-pressed="false">Reduce motion and depth</button>
+    <div class="sec-h rv">
+      <p class="sec-n">Nothing leaves this page</p>
+      <h2>Built to be trusted by people who are worried</h2>
+      <p>The subject is frightening enough without a website tracking how frightened you are. So this one cannot.</p>
+    </div>
+    <div class="tiles rv rv-2">
+      <div class="tile" data-tilt><span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"></rect><rect x="3" y="14" width="18" height="6" rx="1.5"></rect><path d="M6.8 7h.01M6.8 17h.01"></path><path d="M3 21 21 3"></path></svg></span><b>No server</b><p>Your answers are matched against a dataset inside this file. Nothing is sent anywhere, because there is nowhere to send it.</p></div>
+      <div class="tile" data-tilt><span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 6.2 12 6.2 21.5 12 21.5 12 18 17.8 12 17.8 2.5 12 2.5 12Z"></path><circle cx="12" cy="12" r="2.6"></circle><path d="M3.5 20.5 20.5 3.5"></path></svg></span><b>No tracking</b><p>No analytics, no cookies, no third-party code. The typefaces are built into the page rather than fetched.</p></div>
+      <div class="tile" data-tilt><span class="g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path><path d="M12 11.5v5.5"></path><path d="M9.6 14.6 12 17l2.4-2.4"></path></svg></span><b>Works offline</b><p>Turn off your connection and it still works. Save the file and it works next year.</p></div>
+    </div>
+    <button type="button" class="fx rv rv-3" id="fx" aria-pressed="false">Reduce motion and depth</button>
   </div>
 </section>
 
-<section class="sec" id="form">
+<section class="sec aura-2" id="how">
   <div class="wrap">
     <div class="sec-h rv">
-      <p class="cap">Three questions</p>
+      <p class="sec-n">How it works</p>
+      <h2>Three stages, and you are not in any of them</h2>
+      <p>You do not file anything under this framework. The platform does, and the authorities do the rest. What changes from country to country is only the dates.</p>
+    </div>
+    <div class="pipe rv rv-2">
+      <div class="pipe-rail" aria-hidden="true"></div>
+      <div class="stage" data-tilt><div class="stage-n" aria-hidden="true">01</div><b>Collect</b><p>From the first reporting year the platform records every sale, swap and transfer, and verifies where you are tax resident.</p><span class="when">From 1 January 2026 in most early adopters</span></div>
+      <div class="stage" data-tilt><div class="stage-n" aria-hidden="true">02</div><b>Report</b><p>The following year it files the whole record with its own tax authority, by a deadline each country sets for itself.</p><span class="when">31 January in Denmark, 31 May in the UK, 31 July in Germany</span></div>
+      <div class="stage lit" data-tilt><div class="stage-n" aria-hidden="true">03</div><b>Exchange</b><p>Nine months after the year ends, authorities swap files across borders. Your data arrives where you live, whoever holds it.</p><span class="when">First exchange 30 September 2027</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec aura-3" id="form">
+  <div class="wrap">
+    <div class="sec-h rv">
+      <p class="sec-n">Three questions</p>
       <h2>Tell the tool where you stand</h2>
+      <p>Your tax residence decides who receives the data. The other two answers decide what the result says about it.</p>
     </div>
 
     <form id="the-form" novalidate>
+      <div class="fbar rv" aria-hidden="true"><i id="fbar"></i></div>
 
       <fieldset class="rv">
         <legend><span class="fs-n" aria-hidden="true">1</span><label class="fs-t" for="j">Where are you tax resident?</label></legend>
@@ -722,8 +986,10 @@ body.no-fx .hero-c { transition: none; }
   </div>
 </section>
 
-<footer>
+<footer id="sources">
   <div class="wrap">
+    <p class="foot-big rv">Every date on this page names the law that fixes it. <span>If one is wrong, the fix is a correction, not a disclaimer.</span></p>
+    <div class="foot-grid">
     <section class="rv">
       <h2>How this works</h2>
       <p>This tool matches the country you select against a small dataset of jurisdictions where a named legal instrument has been checked. It does no modelling and no estimation. It does not guess a date from a press release, a consultation, an announcement or a news report. If a country is not in the dataset, or its rules are announced but not yet law, the tool says so instead of showing dates.</p>
@@ -736,7 +1002,8 @@ body.no-fx .hero-c { transition: none; }
       <p>Last updated <b id="updated"></b>. Corrections are welcome — the dataset is the product, and a wrong date is worse than a missing one.<span id="contact"></span></p>
     </section>
 
-    <section class="rv">
+    </div>
+    <section class="rv" style="margin-top:2.5rem">
       <h2>Changelog</h2>
       <dl class="log" id="log"></dl>
     </section>
@@ -1069,7 +1336,7 @@ body.no-fx .hero-c { transition: none; }
   };
 
   var CHANGELOG = [
-    { date: '2026-09-08', text: 'Interface rebuilt: a hero carrying a wireframe globe with the dataset’s own exchange routes on it, Space Grotesk and Inter embedded in the file rather than fetched, a depth timeline, a data-path diagram and a readiness console. Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
+    { date: '2026-09-08', text: 'Interface rebuilt as one continuous environment: a hero carrying a wireframe globe with the dataset’s own exchange routes on it, a drifting field behind every section below it, a three-stage explainer of how the reporting actually runs, Space Grotesk and Inter embedded in the file rather than fetched, a depth timeline on a filling rail, a data-path diagram and a readiness console. Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
     { date: '2026-09-07', text: 'First build. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
   ];
 
@@ -1343,7 +1610,8 @@ body.no-fx .hero-c { transition: none; }
     return '<div class="plate">' +
       '<p class="cap">Fixed dates</p>' +
       '<h3>' + esc(heading) + '</h3>' +
-      '<div class="tl-stage"><ol class="tl" id="tl">' + rows + '</ol></div>' +
+      '<div class="tl-stage"><div class="tl-rail" aria-hidden="true"><i id="tl-fill"></i></div>' +
+        '<ol class="tl" id="tl">' + rows + '</ol></div>' +
       (rec.note ? '<p class="tl-note">' + esc(rec.note) + '</p>' : '') +
       (nextIdx === -1 ? '<p class="tl-note">Every date in this record has passed. The reporting is running.</p>' : '') +
     '</div>';
@@ -1807,6 +2075,11 @@ body.no-fx .hero-c { transition: none; }
       els.forEach(function (el) { el.classList.add('in'); });
       return;
     }
+
+    // Only now, with the observer about to be attached, is it safe to hide
+    // anything. If this function never runs the content simply stays visible.
+    document.body.classList.add('rv-on');
+
     var io = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
@@ -1859,6 +2132,175 @@ body.no-fx .hero-c { transition: none; }
     }, { passive: true });
     set();
   }
+
+
+  /* ============================================================
+     The field — one continuous space behind the whole page
+     ============================================================ */
+
+  var fieldRaf = 0;
+
+  function mountField() {
+    var c = document.getElementById('field');
+    if (!c || !c.getContext) return;
+    var ctx = c.getContext('2d');
+    if (!ctx) return;
+
+    var W = 0, H = 0, motes = [], LINK = 132;
+
+    function build() {
+      var target = Math.round(Math.min(110, Math.max(38, (W * H) / 15000)));
+      motes = [];
+      for (var i = 0; i < target; i++) {
+        motes.push({
+          x: Math.random(), y: Math.random(),
+          vx: (Math.random() - 0.5) * 0.000055,
+          vy: (Math.random() - 0.5) * 0.000055,
+          d: 0.35 + Math.random() * 0.65,          // depth, drives parallax and size
+          w: Math.random() < 0.08                   // a few carry the accent
+        });
+      }
+    }
+
+    function layout() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      c.width = Math.round(W * dpr);
+      c.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      build();
+    }
+
+    function frame(now) {
+      var t = now || 0;
+      var par = (window.pageYOffset || 0) * 0.06;
+      ctx.clearRect(0, 0, W, H);
+
+      var pts = [], i, m, x, y;
+      for (i = 0; i < motes.length; i++) {
+        m = motes[i];
+        if (!fxOff()) { m.x += m.vx; m.y += m.vy; }
+        if (m.x < -0.05) m.x = 1.05; else if (m.x > 1.05) m.x = -0.05;
+        if (m.y < -0.05) m.y = 1.05; else if (m.y > 1.05) m.y = -0.05;
+        x = m.x * W;
+        y = ((m.y * (H + 260) - par * m.d) % (H + 260) + (H + 260)) % (H + 260) - 130;
+        pts.push({ x: x, y: y, d: m.d, w: m.w });
+      }
+
+      // links between near neighbours: the field reads as a mesh, not confetti
+      for (i = 0; i < pts.length; i++) {
+        for (var j = i + 1; j < pts.length; j++) {
+          var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > LINK) continue;
+          var a = (1 - dist / LINK) * 0.055 * ((pts[i].d + pts[j].d) / 2);
+          ctx.strokeStyle = 'rgba(143,162,177,' + a.toFixed(4) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.stroke();
+        }
+      }
+
+      for (i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        var pulse = fxOff() ? 0.6 : 0.55 + 0.45 * Math.sin(t / 2200 + i);
+        ctx.fillStyle = p.w
+          ? 'rgba(255,176,32,' + (0.20 * p.d * pulse).toFixed(3) + ')'
+          : 'rgba(143,162,177,' + (0.24 * p.d * pulse).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 0.7 + p.d * 1.15, 0, 6.284);
+        ctx.fill();
+      }
+
+      if (!fxOff()) fieldRaf = requestAnimationFrame(frame);
+    }
+
+    function start() { if (!fieldRaf) fieldRaf = requestAnimationFrame(frame); }
+    function stop() { if (fieldRaf) { cancelAnimationFrame(fieldRaf); fieldRaf = 0; } }
+
+    fieldApi = {
+      relayout: function () { layout(); if (fxOff()) frame(0); },
+      restart: function () { stop(); layout(); if (fxOff()) frame(0); else start(); }
+    };
+
+    layout();
+    frame(0);
+    if (!fxOff()) start();
+    c.classList.add('lit');
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else if (!fxOff()) start();
+    });
+    window.addEventListener('scroll', function () { if (fxOff()) frame(0); }, { passive: true });
+  }
+
+  var fieldApi = null;
+
+  /* ---------- nav that arrives once the hero is behind you ---------- */
+
+  function mountNav() {
+    var nav = document.getElementById('nav');
+    var hero = document.getElementById('hero');
+    if (!nav || !hero) return;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        nav.classList.toggle('on', !es[0].isIntersecting);
+      }, { threshold: 0, rootMargin: '-72px 0px 0px 0px' }).observe(hero);
+    } else {
+      window.addEventListener('scroll', function () {
+        nav.classList.toggle('on', window.pageYOffset > window.innerHeight * 0.7);
+      }, { passive: true });
+    }
+  }
+
+  /* ---------- cards that turn slightly toward the pointer ---------- */
+
+  function mountCardTilt() {
+    if (fxOff()) return;
+    if (!window.matchMedia || !window.matchMedia('(pointer: fine)').matches) return;
+    [].slice.call(document.querySelectorAll('[data-tilt]')).forEach(function (el) {
+      var pending = 0;
+      el.addEventListener('pointermove', function (e) {
+        if (pending) return;
+        pending = requestAnimationFrame(function () {
+          pending = 0;
+          var r = el.getBoundingClientRect();
+          var px = (e.clientX - r.left) / r.width - 0.5;
+          var py = (e.clientY - r.top) / r.height - 0.5;
+          el.style.transform = 'rotateY(' + (px * 5).toFixed(2) + 'deg) rotateX(' +
+                               (-py * 5).toFixed(2) + 'deg) translateZ(6px)';
+        });
+      });
+      el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+    });
+  }
+
+  /* ---------- the timeline rail fills as you read down it ---------- */
+
+  function mountRail() {
+    var stage = document.querySelector('.tl-stage');
+    var fill = document.getElementById('tl-fill');
+    if (!stage || !fill) return;
+    var pending = 0;
+    function set() {
+      pending = 0;
+      var r = stage.getBoundingClientRect();
+      var mid = window.innerHeight * 0.55;
+      var p = (mid - r.top) / r.height;
+      fill.style.height = Math.max(0, Math.min(1, p)) * 100 + '%';
+    }
+    window.addEventListener('scroll', function () {
+      if (pending) return;
+      pending = requestAnimationFrame(set);
+    }, { passive: true });
+    set();
+    railSet = set;
+  }
+
+  var railSet = null;
 
   /* ============================================================
      Wiring
@@ -1917,8 +2359,13 @@ body.no-fx .hero-c { transition: none; }
     setFx(!noFx);
     teardown();
     if (heroApi) heroApi.restart();
+    if (fieldApi) fieldApi.restart();
+    if (!noFx) mountCardTilt();
     if (noFx) {
+      document.body.classList.remove('rv-on');
       [].slice.call(document.querySelectorAll('.rv')).forEach(function (el) { el.classList.add('in'); });
+    } else if (!document.body.classList.contains('rv-on')) {
+      mountReveals();
     }
     if (document.getElementById('flow') && currentRec) mountFlow(currentRec);
     if (document.getElementById('cd')) mountConsole();
@@ -1970,18 +2417,25 @@ body.no-fx .hero-c { transition: none; }
             (form.querySelector('input[name="past"]:checked') ? 1 : 0);
     goBtn.classList.toggle('armed', n === 3);
     goCount.innerHTML = '<b>' + n + '</b> of 3 answered';
+    var fb = document.getElementById('fbar');
+    if (fb) fb.style.width = (n / 3 * 100) + '%';
   }
   form.addEventListener('change', arm);
   arm();
 
   window.addEventListener('resize', function () {
     if (heroApi) heroApi.relayout();
+    if (fieldApi) fieldApi.relayout();
+    if (railSet) railSet();
   });
 
   mountHero();
+  mountField();
+  mountNav();
   mountReveals();
   mountCounters();
   mountProgress();
+  mountCardTilt();
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -2027,6 +2481,7 @@ body.no-fx .hero-c { transition: none; }
       mountFlow(rec);
       mountConsole();
       mountTilt();
+      mountRail();
     }
 
     out.focus({ preventScroll: true });

@@ -5,6 +5,24 @@ OECD Crypto-Asset Reporting Framework, which tax authority receives their data, 
 date. `index.html` is the whole product — inline CSS and JavaScript, no dependencies, no
 build step. Deploy it to any static host as it is.
 
+## Page structure
+
+One environment from top to bottom, rather than a hero followed by documents:
+
+1. **Hero** — full height, wireframe globe in canvas carrying the dataset's own exchange
+   routes, headline, and three live figures.
+2. **Trust** — why nothing leaves the page, as three tiles. This is a ranking and
+   credibility requirement, not decoration; do not quietly drop it.
+3. **How it works** — collect, report, exchange, with the third stage lit because the first
+   cross-border exchange is the next real milestone.
+4. **The three questions** — a progress bar fills as they are answered and the button arms.
+5. **The result** — numbered plates: scope, data path, dates, payload, readiness, sources.
+6. **Footer** — the standing promise about dates, then maintainer, methodology, changelog.
+
+A fixed background canvas (`#field`) drifts behind all of it, a nav appears once the hero
+is behind you, and a scroll progress line runs along the top. That continuity is the point:
+the page should not feel like a landing page bolted to a form.
+
 ## The interface
 
 An inverted read-out: dark cool ground, one amber accent, six palette values. Type is
