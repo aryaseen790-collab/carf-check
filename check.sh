@@ -21,12 +21,12 @@ fail=0
 say() { printf '%-34s %s\n' "$1" "$2"; }
 
 # 1 — the script must parse
-python3 - "$FILE" > "$TMP/app.js" <<'PY'
+python3 - "$FILE" > "$TMP/app.js" <<'PYEOF'
 import re, sys
 s = open(sys.argv[1], encoding='utf-8').read()
 m = re.search(r'<script>(.*)</script>', s, re.S)
 sys.stdout.write(m.group(1) if m else '')
-PY
+PYEOF
 if [ ! -s "$TMP/app.js" ]; then
   say "script extraction" "FAIL — no <script> block found"; fail=1
 elif node --check "$TMP/app.js" 2>"$TMP/syntax.txt"; then
@@ -58,58 +58,35 @@ done
 if [ -z "$CH" ]; then
   say "smoke test" "SKIPPED — no chromium found"
 else
-  python3 - "$FILE" "$TMP/smoke.html" <<'PY'
+  python3 - "$FILE" "$TMP/smoke.html" ".check/probe.js" <<'PYEOF'
 import sys
 s = open(sys.argv[1], encoding='utf-8').read()
-probe = """
-<script>
-window.__e=[]; window.onerror=function(m,u,l){window.__e.push(m+' @'+l);};
-setTimeout(function(){
-  var r=[], sel=document.getElementById('j'), f=document.getElementById('the-form');
-  r.push('options='+(sel?sel.options.length:0));
-  var c=document.getElementById('globe'), lit=0;
-  if(c&&c.getContext){var d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-    for(var i=3;i<d.length;i+=4){if(d[i]>8)lit++;}}
-  r.push('globepx='+lit);
-  var bad=0,n=0;
-  for(var i=1;i<sel.options.length;i++){
-    ['platform','self','none'].forEach(function(u){
-      sel.value=sel.options[i].value;
-      f.querySelector('input[name=use][value='+u+']').checked=true;
-      f.querySelector('input[name=past][value=gaps]').checked=true;
-      f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
-      n++;
-      var h=document.getElementById('result').innerHTML;
-      if(h.length<300||/undefined|NaN/.test(h)) bad++;
-    });
-  }
-  r.push('combos='+n); r.push('bad='+bad);
-  r.push('errors='+(window.__e.length?window.__e.join('; '):'none'));
-  document.title='RESULT '+r.join(' ');
-},1200);
-</script>
-"""
-open(sys.argv[2],'w',encoding='utf-8').write(s.replace('</body>', probe+'</body>'))
-PY
-  out=$("$CH" --headless --no-sandbox --disable-gpu --virtual-time-budget=9000 \
+probe = open(sys.argv[3], encoding='utf-8').read()
+open(sys.argv[2], 'w', encoding='utf-8').write(
+    s.replace('</body>', '<script>' + probe + '</script></body>'))
+PYEOF
+  out=$("$CH" --headless --no-sandbox --disable-gpu --virtual-time-budget=12000 \
         --window-size=1200,900 --dump-dom "file://$TMP/smoke.html" 2>/dev/null \
         | grep -o '<title>RESULT[^<]*</title>' | sed 's/<[^>]*>//g')
   if [ -z "$out" ]; then
     say "smoke test" "FAIL — script never ran (parse error?)"; fail=1
   else
     say "smoke test" "${out#RESULT }"
-    case "$out" in
-      *"bad=0"*) ;;
-      *) say "  result rendering" "FAIL — some combinations render empty"; fail=1 ;;
-    esac
-    case "$out" in
-      *"errors=none"*) ;;
-      *) say "  console" "FAIL — runtime errors"; fail=1 ;;
-    esac
+    check() { case "$out" in *"$1"*) ;; *) say "  $2" "FAIL — $3"; fail=1 ;; esac; }
+    check "bad=0"                 "result rendering" "some combinations render empty"
+    check "errors=none"           "console"          "runtime errors"
+    check "combo=1"               "country search"   "combobox did not mount"
+    check "steps=3"               "guided form"      "stepper did not mount"
+    check "visiblestep=1"         "guided form"      "not one step at a time"
+    check "blockedwithoutanswer=1" "guided form"     "advances without an answer"
+    check "readout=1"             "result readout"   "countdown missing"
+    check "filters=4"             "date filters"     "filter chips missing"
     opts=$(printf '%s' "$out" | sed -n 's/.*options=\([0-9]*\).*/\1/p')
     [ "${opts:-0}" -gt 10 ] || { say "  select" "FAIL — country list not populated"; fail=1; }
     px=$(printf '%s' "$out" | sed -n 's/.*globepx=\([0-9]*\).*/\1/p')
     [ "${px:-0}" -gt 1000 ] || { say "  hero globe" "FAIL — canvas is blank"; fail=1; }
+    fr=$(printf '%s' "$out" | sed -n 's/.*afteryoufilter=\([0-9]*\).*/\1/p')
+    [ "${fr:-0}" -ge 1 ] || { say "  date filters" "FAIL — filtering hid every row"; fail=1; }
   fi
 fi
 

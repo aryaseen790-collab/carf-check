@@ -800,6 +800,136 @@ body.no-fx [data-tilt] { transform: none !important; }
 body.no-fx .nav { transition: none; }
 body.no-fx .field { transition: none; }
 
+
+/* ============================================================
+   Interactive layer: guided form, country search, live readout
+   ============================================================ */
+
+/* ---------- stepper ---------- */
+
+.stepbar { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.stepbar i { flex: 1; height: 3px; background: var(--edge); border-radius: 2px; position: relative; overflow: hidden; }
+.stepbar i::after { content: ""; position: absolute; inset: 0; background: var(--signal); transform: scaleX(0); transform-origin: left; transition: transform 460ms var(--ease); }
+.stepbar i.done::after { transform: scaleX(1); }
+.stepbar i.now::after { transform: scaleX(1); opacity: 0.4; }
+
+.step-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: var(--t-xs); color: var(--dim); margin-bottom: 2rem; }
+.step-meta b { color: var(--text); font-weight: 600; }
+
+form.stepped fieldset { display: none; }
+form.stepped fieldset.on { display: block; }
+body.anim form.stepped fieldset.on { animation: step-in 460ms var(--ease) both; }
+@keyframes step-in { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+/* the stepper supplies its own progress, controls and submit */
+form.stepped .go-row, form.stepped .fbar { display: none; }
+.step-ctl .go { opacity: 1; }
+
+.step-ctl { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; margin-top: 1.75rem; }
+.btn-ghost {
+  font-family: var(--fd); font-size: var(--t-s); font-weight: 600;
+  background: transparent; color: var(--dim);
+  border: 1px solid var(--ctl); border-radius: 3px;
+  padding: 0.6rem 1.1rem; min-height: 2.75rem; cursor: pointer;
+  transition: color 180ms var(--ease), border-color 180ms var(--ease);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--text); }
+.btn-ghost[disabled] { opacity: 0.35; cursor: not-allowed; }
+.kbd { font-size: var(--t-xs); color: var(--dim); }
+.kbd b {
+  display: inline-block; min-width: 1.25rem; text-align: center;
+  border: 1px solid var(--ctl); border-bottom-width: 2px; border-radius: 4px;
+  padding: 0.05rem 0.3rem; margin: 0 0.15rem; color: var(--text); font-weight: 600;
+}
+
+.answers { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.ans {
+  font: inherit; font-size: var(--t-xs);
+  border: 1px solid var(--edge); border-radius: 999px;
+  padding: 0.35rem 0.8rem; color: var(--dim); background: transparent; cursor: pointer;
+}
+.ans:hover { border-color: var(--text); color: var(--text); }
+.ans b { color: var(--text); font-weight: 600; }
+
+/* ---------- country search ---------- */
+
+.cbx { position: relative; max-width: 28rem; }
+.cbx-in {
+  font: inherit; font-size: var(--t-b); width: 100%;
+  padding: 0.85rem 2.4rem 0.85rem 0.85rem;
+  background: var(--deck); color: var(--text);
+  border: 1px solid var(--ctl); border-radius: 3px;
+}
+.cbx-in::placeholder { color: var(--dim); }
+.cbx-in:hover { border-color: var(--text); }
+.cbx.open .cbx-in { border-color: var(--signal); }
+.cbx-mk { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--dim); pointer-events: none; font-size: var(--t-xs); }
+.cbx-list {
+  position: absolute; z-index: 25; left: 0; right: 0; top: calc(100% + 0.4rem);
+  max-height: 17rem; overflow: auto; overscroll-behavior: contain;
+  background: #0a1017; border: 1px solid var(--ctl); border-radius: 6px;
+  padding: 0.3rem; display: none;
+  box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.8);
+}
+.cbx.open .cbx-list { display: block; }
+.cbx-o {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 0.7rem; border-radius: 4px; cursor: pointer; font-size: var(--t-s);
+}
+.cbx-o.hi { background: rgba(255, 176, 32, 0.14); }
+.cbx-o em { font-style: normal; color: var(--signal); }
+.cbx-t { font-size: var(--t-xs); color: var(--dim); white-space: nowrap; }
+.cbx-o.has .cbx-t { color: var(--signal); }
+.cbx-empty { padding: 0.8rem 0.7rem; font-size: var(--t-s); color: var(--dim); }
+.cbx-hint { font-size: var(--t-xs); color: var(--dim); margin-top: 0.6rem; }
+
+/* ---------- result readout band ---------- */
+
+.readout { display: grid; gap: 1px; background: var(--edge); border: 1px solid var(--edge); border-radius: 5px; overflow: hidden; }
+.ro { background: var(--deck); padding: 1.125rem 1.25rem; }
+.ro-k { font-size: var(--t-xs); color: var(--dim); font-weight: 600; margin-bottom: 0.45rem; }
+.ro-v { font-family: var(--fd); font-size: clamp(1.25rem, 4.6vw, 1.5rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+.ro-v.hot { color: var(--signal); }
+.ro-s { font-size: var(--t-xs); color: var(--dim); margin-top: 0.4rem; }
+.ro-v .u { font-size: 0.5em; font-weight: 500; color: var(--dim); letter-spacing: 0; margin: 0 0.5rem 0 0.15rem; }
+@media (min-width: 46rem) { .readout { grid-template-columns: 1fr 1fr 1.3fr; } }
+
+/* ---------- timeline: who, filters, countdown per row ---------- */
+
+.tlf { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.375rem; }
+.tlf button {
+  font: inherit; font-size: var(--t-xs); font-weight: 600;
+  border: 1px solid var(--ctl); background: transparent; color: var(--dim);
+  border-radius: 999px; padding: 0.4rem 0.85rem; cursor: pointer;
+  transition: background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease);
+}
+.tlf button:hover { color: var(--text); border-color: var(--text); }
+.tlf button[aria-pressed="true"] { background: var(--signal); border-color: var(--signal); color: var(--void); }
+.tlf .n { opacity: 0.7; margin-left: 0.35rem; }
+
+.who {
+  font-size: var(--t-xs); font-weight: 600; border-radius: 999px;
+  padding: 0.15rem 0.6rem; border: 1px solid var(--edge); color: var(--dim); white-space: nowrap;
+}
+.who[data-w="you"] { color: var(--signal); border-color: rgba(255, 176, 32, 0.5); }
+.tl-row[hidden] { display: none; }
+.tl-empty { font-size: var(--t-s); color: var(--dim); padding: 1rem 0; }
+
+/* ---------- readiness completion ---------- */
+
+.rc-done {
+  display: none; align-items: center; gap: 0.6rem;
+  margin-top: 1.125rem; padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 176, 32, 0.5); border-radius: 4px;
+  background: rgba(255, 176, 32, 0.07);
+  font-size: var(--t-s); color: var(--text);
+}
+.ring.done + .rc-done, .rc-done.on { display: flex; }
+.rc-done svg { width: 1.1rem; height: 1.1rem; color: var(--signal); flex: none; }
+body.anim .rc-done.on { animation: pop 460ms var(--ease) both; }
+@keyframes pop { 0% { opacity: 0; transform: scale(0.96); } 60% { transform: scale(1.01); } 100% { opacity: 1; transform: none; } }
+
+body.no-fx .stepbar i::after { transition: none; }
+
 /* ---------- motion ---------- */
 
 @keyframes word-in { from { opacity: 0; transform: translateY(0.5em) rotateX(-45deg); } to { opacity: 1; transform: none; } }
@@ -1081,19 +1211,19 @@ body.no-fx .hero-c { transition: none; }
       authority: 'HM Revenue & Customs (HMRC)',
       receives: 'HMRC receives your data. A platform based in the UK reports to HMRC directly. A platform based abroad reports to its own authority, which passes your details to HMRC because you live here.',
       events: [
-        { date: '2026-01-01', title: 'Collection started',
+        { date: '2026-01-01', who: 'platform', title: 'Collection started',
           detail: 'UK platforms began recording your transactions and confirming which country you are tax resident in. Everything you have done on a platform since this date is in the first report.',
           cite: 'Reporting Cryptoasset Service Providers (Due Diligence and Reporting Requirements) Regulations 2025 (SI 2025/744), in force 1 January 2026.' },
-        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+        { date: '2027-01-01', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'Platforms must hold a valid self-certification of your tax residence and taxpayer number for accounts that already existed on 1 January 2026. If you ignore the request, the platform has to stop you making reportable transactions.',
           cite: 'SI 2025/744, due diligence requirements — twelve-month window for pre-existing users, following CARF Section IV.' },
-        { date: '2027-01-31', title: 'Platforms registered with HMRC',
+        { date: '2027-01-31', who: 'platform', title: 'Platforms registered with HMRC',
           detail: 'Every UK reporting platform has to be registered with HMRC by this date. This one is the platform’s obligation, not yours.',
           cite: 'SI 2025/744, registration requirement.' },
-        { date: '2027-05-31', title: 'First report reaches HMRC',
+        { date: '2027-05-31', who: 'platform', title: 'First report reaches HMRC',
           detail: 'Platforms send HMRC everything they recorded during 2026: your identity, your totals, and your transactions asset by asset.',
           cite: 'SI 2025/744, annual report due by 31 May following the reportable period.' },
-        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2027-09-30', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'HMRC sends data on people resident elsewhere to their own authorities, and receives data held abroad on UK residents. This is the date your foreign exchange accounts become visible here.',
           cite: CARF_MCAA }
       ],
@@ -1111,13 +1241,13 @@ body.no-fx .hero-c { transition: none; }
       authority: 'Revenue',
       receives: 'Revenue receives your data. Platforms established in Ireland report to Revenue; platforms elsewhere in the EU report to their own authority, which sends your details to Revenue because you live here.',
       events: [
-        { date: '2026-01-01', title: 'Collection started',
+        { date: '2026-01-01', who: 'platform', title: 'Collection started',
           detail: 'Irish platforms began due diligence and started recording reportable transactions. Everything from this date onward is in the first report.',
           cite: 'Section 891HA, Taxes Consolidation Act 1997 (inserted by section 92, Finance Act 2025) and S.I. No. 584 of 2025, applying from 1 January 2026.' },
-        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+        { date: '2027-01-01', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'Platforms must have a valid self-certification for users who were already on the books at the start of 2026.',
           cite: 'DAC8 due diligence rules as transposed by S.I. No. 584 of 2025 — twelve-month window for pre-existing users.' },
-        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2027-09-30', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'Revenue exchanges 2026 data with the other EU member states and with CARF partner countries outside the EU.',
           cite: DAC8 }
       ],
@@ -1136,16 +1266,16 @@ body.no-fx .hero-c { transition: none; }
       authority: 'Bundeszentralamt für Steuern (BZSt)',
       receives: 'The BZSt receives your data and passes it to your local Finanzamt and to partner countries. A platform elsewhere in the EU reports to its own authority, which sends your details to the BZSt because you live here.',
       events: [
-        { date: '2026-01-01', title: 'Collection started',
+        { date: '2026-01-01', who: 'platform', title: 'Collection started',
           detail: 'German platforms began recording your transactions and verifying your tax residence and tax identification number.',
           cite: 'Kryptowerte-Steuertransparenzgesetz (KStTG), passed 22 December 2025, in force 24 December 2025; first reporting period 2026.' },
-        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+        { date: '2027-01-01', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'For users whose relationship with the platform began on or before 31 December 2025, identification has to be complete by this date.',
           cite: 'KStTG, §§ 4 to 6 — transitional deadline for pre-existing users.' },
-        { date: '2027-07-31', title: 'First report reaches the BZSt',
+        { date: '2027-07-31', who: 'platform', title: 'First report reaches the BZSt',
           detail: 'Platforms file the 2026 reporting period with the BZSt. From then on the deadline is 31 July every year.',
           cite: 'KStTG — annual report due by 31 July for the preceding reporting period.' },
-        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2027-09-30', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'The BZSt exchanges 2026 data with the other EU member states and with CARF partner countries.',
           cite: DAC8 }
       ],
@@ -1163,16 +1293,16 @@ body.no-fx .hero-c { transition: none; }
       authority: 'Skattestyrelsen',
       receives: 'Skattestyrelsen receives your data. A platform elsewhere in the EU reports to its own authority, which sends your details to Skattestyrelsen because you live here.',
       events: [
-        { date: '2026-01-01', title: 'Collection started',
+        { date: '2026-01-01', who: 'platform', title: 'Collection started',
           detail: 'Platforms serving Danish residents began verifying identity, tax residence and tax number, and recording every exchange transaction and every transfer in or out.',
           cite: 'Law No. 409 of 2025, implementing DAC8 and the OECD CARF, with Executive Order No. 1155 of 2025; applying from 1 January 2026.' },
-        { date: '2027-01-01', title: 'Your tax residence has to be on file',
+        { date: '2027-01-01', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'Platforms must hold a valid self-certification for users who were already on the books at the start of 2026.',
           cite: 'DAC8 due diligence rules as implemented by Executive Order No. 1155 of 2025 — twelve-month window for pre-existing users.' },
-        { date: '2027-01-31', title: 'First report reaches Skattestyrelsen',
+        { date: '2027-01-31', who: 'platform', title: 'First report reaches Skattestyrelsen',
           detail: 'Denmark set an early national filing date rather than taking the full year DAC8 allows: platforms file the whole of 2026 by the end of January. Skattestyrelsen has said its reporting system will be ready that month.',
           cite: 'Executive Order No. 1155 of 2025 — annual report due 31 January following the calendar year.' },
-        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2027-09-30', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'Skattestyrelsen exchanges 2026 data with the other EU member states and with CARF partner countries, and receives what they hold on Danish residents.',
           cite: DAC8 }
       ],
@@ -1190,16 +1320,16 @@ body.no-fx .hero-c { transition: none; }
       authority: '国税庁 — the National Tax Agency (NTA)',
       receives: 'The NTA receives your data. Japanese platforms report to the NTA; platforms abroad report to their own authority, which passes your details to the NTA because you are resident here.',
       events: [
-        { date: '2026-01-01', title: 'Collection started',
+        { date: '2026-01-01', who: 'platform', title: 'Collection started',
           detail: 'Japanese exchanges began recording reportable transactions and collecting residence declarations from users.',
           cite: 'FY2024 tax reform, amending the Act on Special Provisions of the Income Tax Act, the Corporation Tax Act and the Local Tax Act for the Enforcement of Tax Treaties; in force 1 January 2026.' },
-        { date: '2026-12-31', title: 'Residence notification due from existing users',
+        { date: '2026-12-31', who: 'you', title: 'Residence notification due from existing users',
           detail: 'If you opened your account before 2026, you have to file a notification of tax residence with the platform by this date. New accounts do it at opening. This one is your obligation, and the deadline is close.',
           cite: 'FY2024 tax reform — transitional notification requirement for accounts opened on or before 31 December 2025.' },
-        { date: '2027-04-30', title: 'First report reaches the NTA',
+        { date: '2027-04-30', who: 'platform', title: 'First report reaches the NTA',
           detail: 'Platforms file the 2026 calendar year with the NTA by 30 April.',
           cite: 'FY2024 tax reform — annual report due by 30 April following the reporting year.' },
-        { date: '2027-09-30', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2027-09-30', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'The NTA exchanges 2026 data with partner authorities and receives data held abroad on Japanese residents.',
           cite: CARF_MCAA }
       ],
@@ -1216,22 +1346,22 @@ body.no-fx .hero-c { transition: none; }
       authority: 'the Inland Revenue Authority of Singapore (IRAS)',
       receives: 'IRAS receives your data. Singapore starts a year later than Europe: the first reporting year is 2027, not 2026.',
       events: [
-        { date: '2026-08-11', title: 'Rules gazetted',
+        { date: '2026-08-11', who: 'authority', title: 'Rules gazetted',
           detail: 'The CARF regulations were published in the Government Gazette, fixing the dates below.',
           cite: 'Income Tax (International Tax Compliance Agreements) (Crypto-Asset Reporting Framework) Regulations 2026, first published 11 August 2026.' },
-        { date: '2027-01-01', title: 'Collection starts',
+        { date: '2027-01-01', who: 'platform', title: 'Collection starts',
           detail: 'Singapore platforms begin due diligence and start recording reportable transactions. Activity before this date is not in the first report.',
           cite: 'CARF Regulations 2026 — implementation from 1 January 2027.' },
-        { date: '2027-12-31', title: 'Your tax residence has to be on file',
+        { date: '2027-12-31', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'For users whose relationship existed at 31 December 2026, the platform must have a valid, verified self-certification by this date.',
           cite: 'CARF Regulations 2026 — due diligence deadline for pre-existing users.' },
-        { date: '2028-01-01', title: 'Transactions blocked without it',
+        { date: '2028-01-01', who: 'you', title: 'Transactions blocked without it',
           detail: 'From this date a platform generally cannot carry out relevant transactions for a pre-existing user who has not given a valid self-certification.',
           cite: 'CARF Regulations 2026 — restriction on relevant transactions.' },
-        { date: '2028-05-31', title: 'First return reaches IRAS',
+        { date: '2028-05-31', who: 'platform', title: 'First return reaches IRAS',
           detail: 'Platforms file the 2027 calendar year with IRAS.',
           cite: 'CARF Regulations 2026 — first returns for 2027 due by 31 May 2028.' },
-        { date: '2028-09-30', display: 'September 2028', kind: 'exchange', title: 'First exchange across borders',
+        { date: '2028-09-30', display: 'September 2028', kind: 'exchange', who: 'authority', title: 'First exchange across borders',
           detail: 'Singapore begins exchanging crypto data with partner authorities, covering calendar year 2027. The commitment names the month, not the day.',
           cite: 'Singapore’s CARF commitment — first exchanges in September 2028; ' + CARF_MCAA }
       ],
@@ -1249,16 +1379,16 @@ body.no-fx .hero-c { transition: none; }
       authority: 'the Internal Revenue Service (IRS)',
       receives: 'The IRS receives your data, but not through the CARF. The United States has not signed the CARF exchange agreement, so there is no CARF route for your details to reach the IRS from abroad. US brokers report to the IRS directly instead, on Form 1099-DA. A platform outside the US may still ask for your details and report you to its own authority — that data simply has nowhere to go under this framework.',
       events: [
-        { date: '2025-01-01', title: 'Broker reporting started',
+        { date: '2025-01-01', who: 'platform', title: 'Broker reporting started',
           detail: 'US digital asset brokers began recording gross proceeds from your sales.',
           cite: 'Internal Revenue Code § 6045 and the digital asset broker final regulations published in 2024, following the Infrastructure Investment and Jobs Act 2021.' },
-        { date: '2026-01-31', display: 'Early 2026', label: 'the forms arrive', title: 'First Form 1099-DA arrived',
+        { date: '2026-01-31', display: 'Early 2026', label: 'the forms arrive', who: 'platform', title: 'First Form 1099-DA arrived',
           detail: 'Brokers issued the first 1099-DA forms, covering 2025 sales. Gross proceeds only — no cost basis in this first year.',
           cite: 'Digital asset broker final regulations (2024) — gross proceeds reporting for 2025 transactions.' },
-        { date: '2026-01-01', title: 'Cost basis reporting started',
+        { date: '2026-01-01', who: 'platform', title: 'Cost basis reporting started',
           detail: 'For 2026 transactions in covered digital assets, brokers also have to report what you paid and when.',
           cite: 'Digital asset broker final regulations (2024) — basis reporting for covered digital assets from 2026.' },
-        { date: '2027-01-31', display: 'Early 2027', label: 'the forms arrive', title: 'First 1099-DA with cost basis',
+        { date: '2027-01-31', display: 'Early 2027', label: 'the forms arrive', who: 'platform', title: 'First 1099-DA with cost basis',
           detail: 'The forms covering 2026 arrive, this time showing basis as well as proceeds. Where the broker’s basis figure differs from yours, the difference is yours to explain.',
           cite: 'Digital asset broker final regulations (2024) — basis reporting for covered digital assets from 2026.' }
       ],
@@ -1336,7 +1466,7 @@ body.no-fx .hero-c { transition: none; }
   };
 
   var CHANGELOG = [
-    { date: '2026-09-08', text: 'Interface rebuilt as one continuous environment: a hero carrying a wireframe globe with the dataset’s own exchange routes on it, a drifting field behind every section below it, a three-stage explainer of how the reporting actually runs, Space Grotesk and Inter embedded in the file rather than fetched, a depth timeline on a filling rail, a data-path diagram and a readiness console. Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
+    { date: '2026-09-08', text: 'Interface rebuilt as one continuous environment: a hero carrying a wireframe globe with the dataset’s own exchange routes on it, a drifting field behind every section below it, a three-stage explainer of how the reporting actually runs, Space Grotesk and Inter embedded in the file rather than fetched, a depth timeline on a filling rail, a data-path diagram and a readiness console. The three questions became a guided sequence: type-to-search for your country, number keys to answer, one question at a time, and answers you can jump back to. Results now open with a readout band carrying your status, the authority and a live countdown, and every date is tagged with who has to act so you can filter down to your own moves. Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
     { date: '2026-09-07', text: 'First build. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
   ];
 
@@ -1577,6 +1707,34 @@ body.no-fx .hero-c { transition: none; }
      Timeline — the centrepiece, rendered with depth
      ============================================================ */
 
+  function readoutBlock(rec, use) {
+    var status, note;
+    if (use === 'self') { status = 'Not reported as such'; note = 'a private wallet is not reportable on its own'; }
+    else if (rec.outside) { status = 'Outside this framework'; note = 'reported to the authority directly instead'; }
+    else if (rec.status === 'unconfirmed') { status = 'In scope, dates unverified'; note = 'no instrument checked for ' + rec.label; }
+    else { status = 'In scope'; note = 'the platform files, not you'; }
+
+    var auth = rec.status === 'sourced' ? (rec.short || rec.authority) : 'Not verified';
+    var authNote = rec.status === 'sourced' ? rec.label : 'search your tax authority for CARF';
+
+    var ev = nextEvent(rec);
+    var next = ev
+      ? '<p class="ro-v hot" id="cd" data-target="' + esc(ev.date) + '" data-approx="' + (ev.display ? '1' : '') + '">—</p>' +
+        '<p class="ro-s">until ' + esc(ev.title.toLowerCase()) + '</p>'
+      : '<p class="ro-v">No fixed date</p><p class="ro-s">nothing to count down to yet</p>';
+
+    return '<div class="plate">' +
+      '<p class="cap">Readout</p>' +
+      '<div class="readout">' +
+        '<div class="ro"><p class="ro-k">Your status</p><p class="ro-v">' + esc(status) + '</p><p class="ro-s">' + esc(note) + '</p></div>' +
+        '<div class="ro"><p class="ro-k">Data goes to</p><p class="ro-v">' + esc(auth) + '</p><p class="ro-s">' + esc(authNote) + '</p></div>' +
+        '<div class="ro"><p class="ro-k">Next date</p>' + next + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var WHO = { you: 'Your move', platform: 'Platform', authority: 'Authorities' };
+
   function timelineBlock(rec, heading) {
     var today = todayUTC();
     var evs = sortedEvents(rec);
@@ -1589,15 +1747,18 @@ body.no-fx .hero-c { transition: none; }
       var t = parseDate(ev.date);
       var past = t < today;
       var isNext = i === nextIdx;
+      var days = Math.round((t - today) / 86400000);
       var tag = isNext
-        ? (ev.display ? 'Next' : daysWord(Math.round((t - today) / 86400000)))
-        : (past ? 'Elapsed' : '');
+        ? (ev.display ? 'Next' : daysWord(days))
+        : (past ? 'Elapsed' : (ev.display ? 'Ahead' : 'in ' + days + ' days'));
+      var who = ev.who || 'platform';
 
       return '<li class="tl-row' + (past ? ' is-past' : '') + (isNext ? ' is-next' : '') +
-             '" style="--i:' + i + '" tabindex="0">' +
+             '" style="--i:' + i + '" tabindex="0" data-who="' + esc(who) + '">' +
         '<div class="tl-head">' +
           '<time class="tl-date" datetime="' + esc(ev.date) + '">' + dateMarkup(ev) + '</time>' +
           (tag ? '<span class="tl-tag">' + esc(tag) + '</span>' : '') +
+          '<span class="who" data-w="' + esc(who) + '">' + esc(WHO[who] || who) + '</span>' +
         '</div>' +
         '<div class="tl-body">' +
           '<p class="tl-what">' + esc(ev.title) + '</p>' +
@@ -1607,9 +1768,20 @@ body.no-fx .hero-c { transition: none; }
       '</li>';
     }).join('');
 
+    var counts = { all: evs.length, you: 0, platform: 0, authority: 0 };
+    evs.forEach(function (e) { counts[e.who || 'platform']++; });
+    var chip = function (k, label) {
+      return '<button type="button" data-filter="' + k + '" aria-pressed="' + (k === 'all') + '">' +
+             esc(label) + '<span class="n">' + counts[k] + '</span></button>';
+    };
+
     return '<div class="plate">' +
       '<p class="cap">Fixed dates</p>' +
       '<h3>' + esc(heading) + '</h3>' +
+      '<div class="tlf" role="group" aria-label="Filter dates by who has to act">' +
+        chip('all', 'All') + chip('you', 'Your move') +
+        chip('platform', 'Platform') + chip('authority', 'Authorities') +
+      '</div>' +
       '<div class="tl-stage"><div class="tl-rail" aria-hidden="true"><i id="tl-fill"></i></div>' +
         '<ol class="tl" id="tl">' + rows + '</ol></div>' +
       (rec.note ? '<p class="tl-note">' + esc(rec.note) + '</p>' : '') +
@@ -1651,7 +1823,6 @@ body.no-fx .hero-c { transition: none; }
   ];
 
   function consoleBlock(rec) {
-    var ev = nextEvent(rec);
     var items = STEPS.map(function (s, i) {
       return '<li><label class="step">' +
         '<input type="checkbox" data-step>' +
@@ -1660,10 +1831,8 @@ body.no-fx .hero-c { transition: none; }
       '</label></li>';
     }).join('');
 
-    var cd = ev
-      ? '<div class="cd"><p class="cd-n" id="cd" data-target="' + esc(ev.date) + '" data-approx="' + (ev.display ? '1' : '') + '">—</p>' +
-        '<p class="cd-l">until ' + esc(ev.title.toLowerCase()) + (ev.display ? ', expected ' + esc(ev.display) : '') + '</p></div>'
-      : '<div class="cd"><p class="cd-n">No fixed date</p><p class="cd-l">nothing to count down to until an instrument is in force</p></div>';
+    var cd = '<div class="cd"><p class="cd-n" id="rc-left">3</p>' +
+      '<p class="cd-l">things worth doing before ' + esc(targetLabel(rec)) + '</p></div>';
 
     return '<div class="plate">' +
       '<p class="cap">Readiness</p>' +
@@ -1679,6 +1848,10 @@ body.no-fx .hero-c { transition: none; }
         cd +
       '</div>' +
       '<ul class="steps">' + items + '</ul>' +
+      '<div class="rc-done" id="rc-done">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>' +
+        '<span>All three done. You have what you need before ' + esc(targetLabel(rec)) + '.</span>' +
+      '</div>' +
       '<p class="rc-note">Ticks live in this browser tab only. Nothing is saved, and closing the page clears them — that is the same promise as the rest of this tool.</p>' +
     '</div>';
   }
@@ -1690,11 +1863,19 @@ body.no-fx .hero-c { transition: none; }
     var rs = document.getElementById('ring-s');
     var C = 226.19;
 
+    var left = document.getElementById('rc-left');
+    var badge = document.getElementById('rc-done');
+    var ringWrap = document.querySelector('.ring');
+
     function update() {
       var done = boxes.filter(function (b) { return b.checked; }).length;
+      var all = done === boxes.length;
       if (ring) ring.setAttribute('stroke-dashoffset', (C * (1 - done / boxes.length)).toFixed(2));
       if (rn) rn.textContent = done + ' of ' + boxes.length;
-      if (rs) rs.textContent = done === 0 ? 'Not started' : (done < boxes.length ? 'In progress' : 'Ready');
+      if (rs) rs.textContent = done === 0 ? 'Not started' : (all ? 'Ready' : 'In progress');
+      if (left) left.textContent = boxes.length - done;
+      if (ringWrap) ringWrap.classList.toggle('done', all);
+      if (badge) badge.classList.toggle('on', all);
     }
     boxes.forEach(function (b) { b.addEventListener('change', update); });
     update();
@@ -1805,9 +1986,7 @@ body.no-fx .hero-c { transition: none; }
   }
 
   function verdictBlock(rec, use) {
-    var who = rec.status === 'sourced'
-      ? '<div class="who">Your data goes to<b>' + esc(rec.authority) + '</b>' + esc(rec.receives) + '</div>'
-      : '';
+    var who = rec.status === 'sourced' ? '<div class="who">' + esc(rec.receives) + '</div>' : '';
 
     if (use === 'none') {
       return '<div class="plate verdict">' +
@@ -1855,7 +2034,9 @@ body.no-fx .hero-c { transition: none; }
   }
 
   function build(rec, use, past) {
-    var parts = [verdictBlock(rec, use)];
+    var parts = [];
+    if (use !== 'none') parts.push(readoutBlock(rec, use));
+    parts.push(verdictBlock(rec, use));
 
     if (use === 'none') {
       if (rec.status === 'sourced') parts.push(sourcesBlock(rec));
@@ -2302,6 +2483,278 @@ body.no-fx .hero-c { transition: none; }
 
   var railSet = null;
 
+
+  /* ---------- who has to act: filter the dates ---------- */
+
+  function mountFilters() {
+    var wrap = document.querySelector('.tlf');
+    var list = document.getElementById('tl');
+    if (!wrap || !list) return;
+    var rows = [].slice.call(list.querySelectorAll('.tl-row'));
+
+    var empty = document.createElement('p');
+    empty.className = 'tl-empty';
+    empty.hidden = true;
+    empty.textContent = 'No dates in this record fall to that party.';
+    list.parentNode.insertBefore(empty, list.nextSibling);
+
+    wrap.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-filter]') : null;
+      if (!btn) return;
+      var k = btn.getAttribute('data-filter');
+      [].slice.call(wrap.querySelectorAll('[data-filter]')).forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      var shown = 0;
+      rows.forEach(function (r) {
+        var on = (k === 'all') || r.getAttribute('data-who') === k;
+        r.hidden = !on;
+        if (on) shown++;
+      });
+      empty.hidden = shown > 0;
+      if (railSet) railSet();
+    });
+  }
+
+
+  /* ============================================================
+     Guided form — an enhancement layer. If any of this fails to
+     run, the plain three-question form underneath still works.
+     ============================================================ */
+
+  function mountCombo(form, sel) {
+    var opts = [].slice.call(sel.options).filter(function (o) { return o.value; })
+      .map(function (o) { return { v: o.value, t: o.textContent, has: DATA[o.value] && DATA[o.value].status === 'sourced' }; });
+
+    var wrap = document.createElement('div');
+    wrap.className = 'cbx';
+    wrap.innerHTML =
+      '<input class="cbx-in" id="j" type="text" role="combobox" autocomplete="off" ' +
+        'aria-expanded="false" aria-controls="cbx-list" aria-autocomplete="list" ' +
+        'placeholder="Type a country, or browse the list">' +
+      '<span class="cbx-mk" aria-hidden="true">' + opts.length + '</span>' +
+      '<ul class="cbx-list" id="cbx-list" role="listbox" aria-label="Countries and territories"></ul>';
+
+    sel.parentNode.insertBefore(wrap, sel);
+    sel.id = 'j-native';
+    sel.style.display = 'none';
+    sel.setAttribute('tabindex', '-1');
+    sel.setAttribute('aria-hidden', 'true');
+
+    var hint = document.createElement('p');
+    hint.className = 'cbx-hint';
+    hint.innerHTML = 'Countries with a checked legal instrument are marked <em style="font-style:normal;color:var(--signal)">dated</em>. The rest say so plainly.';
+    wrap.parentNode.insertBefore(hint, wrap.nextSibling);
+
+    var input = wrap.querySelector('.cbx-in');
+    var list = wrap.querySelector('.cbx-list');
+    var view = [], hi = -1, open = false;
+
+    function render(q) {
+      var needle = (q || '').trim().toLowerCase();
+      view = needle ? opts.filter(function (o) { return o.t.toLowerCase().indexOf(needle) >= 0; }) : opts.slice();
+      if (!view.length) {
+        list.innerHTML = '<li class="cbx-empty">Nothing matches that. Clear the box to see all ' + opts.length + '.</li>';
+        hi = -1;
+        return;
+      }
+      list.innerHTML = view.map(function (o, i) {
+        var label = esc(o.t);
+        if (needle) {
+          var at = o.t.toLowerCase().indexOf(needle);
+          label = esc(o.t.slice(0, at)) + '<em>' + esc(o.t.slice(at, at + needle.length)) + '</em>' + esc(o.t.slice(at + needle.length));
+        }
+        return '<li class="cbx-o' + (o.has ? ' has' : '') + '" role="option" id="cbx-o' + i + '" ' +
+               'aria-selected="false" data-v="' + esc(o.v) + '">' +
+               '<span>' + label + '</span><span class="cbx-t">' + (o.has ? 'dated' : 'no dates') + '</span></li>';
+      }).join('');
+      hi = 0;
+      mark();
+    }
+
+    function mark() {
+      var items = list.querySelectorAll('.cbx-o');
+      for (var i = 0; i < items.length; i++) {
+        var on = i === hi;
+        items[i].classList.toggle('hi', on);
+        items[i].setAttribute('aria-selected', String(on));
+        if (on) {
+          input.setAttribute('aria-activedescendant', items[i].id);
+          var it = items[i], lt = it.offsetTop, lb = lt + it.offsetHeight;
+          if (lt < list.scrollTop) list.scrollTop = lt;
+          else if (lb > list.scrollTop + list.clientHeight) list.scrollTop = lb - list.clientHeight;
+        }
+      }
+    }
+
+    function setOpen(v) {
+      open = v;
+      wrap.classList.toggle('open', v);
+      input.setAttribute('aria-expanded', String(v));
+      if (!v) input.removeAttribute('aria-activedescendant');
+    }
+
+    function choose(i) {
+      if (i < 0 || i >= view.length) return;
+      sel.value = view[i].v;
+      input.value = view[i].t;
+      setOpen(false);
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    input.addEventListener('focus', function () { render(''); setOpen(true); });
+    input.addEventListener('input', function () { render(input.value); setOpen(true); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!open) { render(input.value); setOpen(true); return; }
+        hi += e.key === 'ArrowDown' ? 1 : -1;
+        if (hi < 0) hi = view.length - 1;
+        if (hi >= view.length) hi = 0;
+        mark();
+      } else if (e.key === 'Enter') {
+        if (open && hi >= 0) { e.preventDefault(); e.stopPropagation(); choose(hi); }
+      } else if (e.key === 'Escape') {
+        if (open) { e.stopPropagation(); setOpen(false); }
+      }
+    });
+    list.addEventListener('mousedown', function (e) {
+      var li = e.target.closest ? e.target.closest('.cbx-o') : null;
+      if (!li) return;
+      e.preventDefault();
+      var items = [].slice.call(list.querySelectorAll('.cbx-o'));
+      choose(items.indexOf(li));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) setOpen(false);
+    });
+
+    return {
+      focus: function () { input.focus(); },
+      label: function () { return input.value; }
+    };
+  }
+
+  function mountStepper(form, sel, combo) {
+    var sets = [].slice.call(form.querySelectorAll('fieldset'));
+    if (sets.length !== 3) return null;
+
+    var titles = ['Where you are tax resident', 'What you have used', 'Your past returns'];
+    var head = document.createElement('div');
+    head.innerHTML =
+      '<div class="stepbar" aria-hidden="true"><i></i><i></i><i></i></div>' +
+      '<p class="step-meta"><span>Question <b id="st-n">1</b> of 3</span><span id="st-t">' + esc(titles[0]) + '</span></p>';
+    form.insertBefore(head, sets[0]);
+
+    var ctl = document.createElement('div');
+    ctl.className = 'step-ctl';
+    ctl.innerHTML =
+      '<button type="button" class="btn-ghost" id="st-back" disabled>Back</button>' +
+      '<button type="button" class="go" id="st-next">Next</button>' +
+      '<span class="kbd" id="st-kbd"></span>';
+    form.insertBefore(ctl, sets[2].nextSibling);
+
+    var answers = document.createElement('div');
+    answers.className = 'answers';
+    form.insertBefore(answers, ctl.nextSibling);
+
+    var bars = head.querySelectorAll('.stepbar i');
+    var nEl = head.querySelector('#st-n'), tEl = head.querySelector('#st-t');
+    var back = ctl.querySelector('#st-back'), next = ctl.querySelector('#st-next');
+    var kbd = ctl.querySelector('#st-kbd');
+    var cur = 0, timer = 0;
+
+    form.classList.add('stepped');
+
+    function answered(i) {
+      if (i === 0) return !!sel.value;
+      var name = i === 1 ? 'use' : 'past';
+      return !!form.querySelector('input[name="' + name + '"]:checked');
+    }
+
+    function chips() {
+      var out = [];
+      if (sel.value) out.push([0, 'Residence', combo ? combo.label() : (DATA[sel.value] || {}).label || sel.value]);
+      var u = form.querySelector('input[name="use"]:checked');
+      if (u) out.push([1, 'Used', u.parentNode.querySelector('.opt-t').textContent]);
+      var p = form.querySelector('input[name="past"]:checked');
+      if (p) out.push([2, 'Returns', p.parentNode.querySelector('.opt-t').textContent]);
+      answers.innerHTML = out.map(function (a) {
+        return '<button type="button" class="ans" data-step="' + a[0] + '">' +
+               esc(a[1]) + ' <b>' + esc(a[2]) + '</b></button>';
+      }).join('');
+    }
+
+    function show(i, focus) {
+      cur = Math.max(0, Math.min(2, i));
+      sets.forEach(function (f, k) { f.classList.toggle('on', k === cur); });
+      for (var k = 0; k < bars.length; k++) {
+        bars[k].classList.toggle('done', k < cur || (k === cur && answered(k)));
+        bars[k].classList.toggle('now', k === cur && !answered(k));
+      }
+      nEl.textContent = cur + 1;
+      tEl.textContent = titles[cur];
+      back.disabled = cur === 0;
+      next.textContent = cur === 2 ? 'Show my dates' : 'Next';
+      form.classList.toggle('at-end', cur === 2);
+      kbd.innerHTML = cur === 0
+        ? 'Type to search, <b>&#8595;</b><b>&#8593;</b> to move, <b>&#9166;</b> to choose'
+        : 'Press <b>1</b><b>2</b><b>3</b> to choose, <b>&#9166;</b> to continue';
+      chips();
+      if (focus) {
+        if (cur === 0 && combo) combo.focus();
+        else {
+          var first = sets[cur].querySelector('input[type="radio"]:checked') || sets[cur].querySelector('input[type="radio"]');
+          if (first) first.focus();
+        }
+      }
+    }
+
+    function go(dir) {
+      if (dir > 0 && !answered(cur)) {
+        errEl.innerHTML = '<b>Pick one to carry on.</b> ' + esc(titles[cur]) + ' is still empty.';
+        return;
+      }
+      errEl.innerHTML = '';
+      if (dir > 0 && cur === 2) { form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })); return; }
+      show(cur + dir, true);
+    }
+
+    next.addEventListener('click', function () { go(1); });
+    back.addEventListener('click', function () { go(-1); });
+    answers.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-step]') : null;
+      if (b) show(+b.getAttribute('data-step'), true);
+    });
+
+    form.addEventListener('change', function () {
+      chips();
+      show(cur, false);
+      if (cur < 2 && answered(cur)) {
+        clearTimeout(timer);
+        timer = setTimeout(function () { if (cur < 2) show(cur + 1, true); }, fxOff() ? 0 : 420);
+      }
+    });
+
+    form.addEventListener('keydown', function (e) {
+      var tag = (e.target.tagName || '').toLowerCase();
+      var typing = tag === 'input' && e.target.type === 'text';
+      if (e.key === 'Enter' && !typing) {
+        if (cur < 2) { e.preventDefault(); go(1); }
+        return;
+      }
+      if (typing) return;
+      if (e.key >= '1' && e.key <= '9') {
+        var radios = [].slice.call(sets[cur].querySelectorAll('input[type="radio"]'));
+        var pick = radios[+e.key - 1];
+        if (pick) { e.preventDefault(); pick.checked = true; pick.focus(); form.dispatchEvent(new Event('change', { bubbles: true })); }
+      }
+    });
+
+    show(0, false);
+    return { show: show };
+  }
+
   /* ============================================================
      Wiring
      ============================================================ */
@@ -2429,6 +2882,10 @@ body.no-fx .hero-c { transition: none; }
     if (railSet) railSet();
   });
 
+  var combo = null, stepper = null;
+  try { combo = mountCombo(form, sel); } catch (e) {}
+  try { stepper = mountStepper(form, sel, combo); } catch (e) {}
+
   mountHero();
   mountField();
   mountNav();
@@ -2482,6 +2939,7 @@ body.no-fx .hero-c { transition: none; }
       mountConsole();
       mountTilt();
       mountRail();
+      mountFilters();
     }
 
     out.focus({ preventScroll: true });

@@ -15,8 +15,15 @@ One environment from top to bottom, rather than a hero followed by documents:
    credibility requirement, not decoration; do not quietly drop it.
 3. **How it works** — collect, report, exchange, with the third stage lit because the first
    cross-border exchange is the next real milestone.
-4. **The three questions** — a progress bar fills as they are answered and the button arms.
-5. **The result** — numbered plates: scope, data path, dates, payload, readiness, sources.
+4. **The three questions** — a guided sequence, one question at a time: type-to-search for the
+   country (marked `dated` or `no dates` so coverage is visible before you pick), number keys
+   to answer, auto-advance, answer chips you can click to go back, and a segmented progress
+   bar. This is an enhancement layer: `mountCombo` and `mountStepper` are both wrapped in
+   try/catch, and if either fails the plain three-question form underneath still submits.
+5. **The result** — numbered plates opening with a readout band (status, receiving authority,
+   live countdown), then data path, dates, payload, readiness, sources. Every date is tagged
+   with who has to act — you, the platform, or the authorities — and the timeline can be
+   filtered down to just your own moves.
 6. **Footer** — the standing promise about dates, then maintainer, methodology, changelog.
 
 A fixed background canvas (`#field`) drifts behind all of it, a nav appears once the hero
@@ -61,6 +68,10 @@ the claim on the page that nothing entered leaves the page is literally true. Ke
 way: adding an analytics snippet or a web font would make the page lie.
 
 ## Before you push
+
+Run `./check.sh`. It now also asserts that the country search and the guided form mounted,
+that the form refuses to advance without an answer, and that the readout and date filters
+rendered — so a broken enhancement layer fails the check rather than shipping quietly.
 
 Run `./check.sh`. The script is inline in a single HTML file, so one stray character in a
 string literal takes the entire page down — no options in the select, no hero, no submit
