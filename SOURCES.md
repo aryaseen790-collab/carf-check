@@ -19,7 +19,29 @@ Check this list against primary sources before publication. Two things to know f
 The September 2026 interface rebuild changed no date, no instrument and no status in the
 dataset — only how they are drawn. This note still describes what the tool renders.
 
-Dataset date: 8 September 2026. Seven jurisdictions render dates. Twenty-four EU member
+**Re-checked 25 November 2026.** What moved, and what did not:
+
+- **UK:** HMRC withdrew the first-year registration deadline of 31 January 2027 on
+  2 November 2026 and confirmed its reporting portal will not open on 1 January 2027. That
+  row has been **removed** rather than left showing a withdrawn date. The 31 May 2027
+  reporting deadline is unchanged. **[VERIFY FIRST]** against HMRC's own guidance — this
+  came from practitioner reporting, not the guidance page itself.
+- **EU:** ten of the twelve member states have since transposed DAC8. Only **Czechia and
+  Spain** remain; both received reasoned opinions on 19 November 2026, giving them two
+  months before referral to the Court of Justice.
+- **Canada:** now **Bill C-31** (Budget 2025 Implementation Act No. 2), adding Part XXI of
+  the Income Tax Act for 2027 onward, first returns before 2 May 2028. No Royal Assent as
+  of late October 2026, and Part XXI commences only on assent.
+- **Australia:** draft legislation published **15 October 2026**; still not law.
+- **Switzerland:** unchanged in substance; the partner-state list needs a second bill that
+  Parliament had not passed as of November 2026.
+- **United States:** the OECD commitment list of 23 June 2026 records it for first exchanges
+  **by 2029**.
+- **No dated row changed** in Ireland, Germany, Denmark, Japan or Singapore. A targeted
+  search for changes to the German (31 July 2027) and Danish (31 January 2027) deadlines
+  returned nothing either way, so absence of news is the only evidence for those two.
+
+Dataset date: 25 November 2026. Seven jurisdictions render dates. Twenty-four EU member
 states, nine other jurisdictions and a catch-all are deliberately recorded as
 `unconfirmed`; they render the "no verified dates" branch.
 
@@ -34,8 +56,8 @@ Requirements) Regulations 2025, SI 2025/744** (made 24 June 2025, in force 1 Jan
 |---|---|---|
 | 1 January 2026 | Collection starts | SI 2025/744 commencement. Consistently reported. |
 | 1 January 2027 | Self-certification for pre-existing users must be held | **[VERIFY FIRST]** Derived from the CARF twelve-month due-diligence window for pre-existing users, reported as applying in the UK. Confirm the regulation and whether the operative date is 31 December 2026 or 1 January 2027. |
-| 31 January 2027 | Platforms registered with HMRC | **[VERIFY FIRST]** From a single practitioner briefing. Confirm the registration provision and date in SI 2025/744. |
-| 31 May 2027 | First report to HMRC for calendar year 2026 | Reported consistently across HMRC-derived commentary. Confirm the regulation number. |
+| 31 May 2027 | First report to HMRC for calendar year 2026 | Reported consistently across HMRC-derived commentary. Confirm the regulation number. Explicitly **not** postponed by the 2 November 2026 guidance change. |
+| ~~31 January 2027~~ | ~~Platforms registered with HMRC~~ | **Removed 25 November 2026**, withdrawn by HMRC on 2 November 2026. Nothing replaced it, because no replacement date has been verified. |
 | 30 September 2027 | First exchange with partner authorities | CARF-MCAA Section 3, nine months after year end. Confirm against the MCAA text and the UK's activated partner list. |
 
 ## Ireland — `status: sourced`
@@ -120,8 +142,10 @@ final regulations**, following the Infrastructure Investment and Jobs Act 2021.
 | 1 January 2026 | Cost basis reporting begins for covered digital assets | Final regulations. |
 | Early 2027 (`display`, sorts at 31 Jan 2027) | First 1099-DA carrying cost basis, covering 2026 | Same. |
 
-The record also states the US has not signed the CARF-MCAA. **[VERIFY FIRST]** against the
-OECD's published signatory list at the date of publication.
+The record states the US is not in the 2027 or 2028 rounds, has not signed the CARF-MCAA,
+and is recorded by the OECD for first exchanges by 2029. **[VERIFY FIRST]** against the
+OECD's commitment list and its signatory list — two different lists, and the US appears on
+one but not the other.
 
 ---
 
@@ -129,11 +153,11 @@ OECD's published signatory list at the date of publication.
 
 | Jurisdiction | Why |
 |---|---|
-| Switzerland | AEOI Act extension approved 26 September 2025, in force 1 January 2026, but the Federal Council decided on 26 November 2025 that the crypto provisions would not apply during 2026 while the 74-state partner list is settled. No exchange date is fixed. |
-| Canada | Draft proposals of 15 August 2025 (new Part of the Income Tax Act); start deferred from 1 January 2026 to 1 January 2027 in the 2026 spring update. Not enacted. |
-| Australia | Announced in the 2025–26 MYEFO on 17 December 2025; the ATO states the measure is not yet law. |
-| Belgium, Bulgaria, Cyprus, Czechia, Estonia, Greece, Luxembourg, Malta, Netherlands, Poland, Portugal, Spain | The twelve member states the European Commission named in February 2026 for failing to transpose DAC8. Obligations depend on national law that was not yet in force. |
-| Austria, Croatia, Finland, France, Hungary, Italy, Latvia, Lithuania, Romania, Slovakia, Slovenia, Sweden | Not among the twelve named, so they appear to have transposed — but the national instrument and the nationally-set filing deadline were not verified. Each needs the same treatment Denmark got: find the instrument, find the nationally-set filing date, then promote. |
+| Switzerland | AEOI Act extension approved 26 September 2025, in force 1 January 2026, but the Federal Council decided on 26 November 2025 that the crypto provisions would not apply during 2026. The 74-state partner list needs a second bill, unpassed as of November 2026, and partners are re-checked against the standard before any exchange. No exchange date is fixed. |
+| Canada | Bill C-31 (Budget 2025 Implementation Act No. 2) would add Part XXI of the Income Tax Act for 2027 onward, first returns before 2 May 2028. No Royal Assent as of late October 2026; Part XXI commences on assent, so wording and dates can still change. |
+| Australia | Draft legislation published 15 October 2026, following the 2025–26 MYEFO announcement; the ATO still records it as not yet law. Proposed collection start 1 January 2027, first exchange 2028, with much of the detail left to regulations that do not exist yet. |
+| Czechia, Spain | The only two of the original twelve still being pursued. Reasoned opinions issued 19 November 2026: two months to finish transposing or be referred to the Court of Justice. |
+| Austria, Belgium, Bulgaria, Croatia, Cyprus, Estonia, Finland, France, Greece, Hungary, Italy, Latvia, Lithuania, Luxembourg, Malta, Netherlands, Poland, Portugal, Romania, Slovakia, Slovenia, Sweden | Not among the twelve named, so they appear to have transposed — but the national instrument and the nationally-set filing deadline were not verified. Each needs the same treatment Denmark got: find the instrument, find the nationally-set filing date, then promote. |
 | Brazil, India, New Zealand, Norway, South Africa, United Arab Emirates | No primary source verified. |
 | "Somewhere else, or not listed above" | Catch-all. |
 
@@ -141,8 +165,7 @@ OECD's published signatory list at the date of publication.
 
 | Claim | Source |
 |---|---|
-| 46 jurisdictions committed for the 2026 reporting period, 29 for 2027, one for 2028, as at 23 June 2026 | OECD, as reported in CARF implementation commentary. **[VERIFY FIRST]** — this number is quoted on the page. |
-| Other 2026 tallies put total commitments near 76 | Secondary commentary. Quoted as an approximation, deliberately. |
+| 76 committed jurisdictions as at 23 June 2026: 46 for first exchanges by 2027, 29 by 2028, the United States by 2029 | OECD commitment list via secondary compilations. **[VERIFY FIRST]** — quoted on the page. The earlier wording said "46 for 2026, 29 for 2027, one for 2028", a year out on each; corrected 25 November 2026. |
 | Exchange within nine months of year end | CARF-MCAA Section 3; DAC8 Article 8ad. |
 | Reportable retail payments above roughly USD 50,000 | OECD CARF, Section I. Confirm the threshold wording. |
 | Blocking after two reminders and 60 days | CARF/DAC8 due diligence rules, as reported for the UK. **[VERIFY FIRST]** before relying on the 60-day figure. |

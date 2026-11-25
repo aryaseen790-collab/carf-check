@@ -17,6 +17,7 @@ FILE=index.html
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 fail=0
+skipped=0
 
 say() { printf '%-34s %s\n' "$1" "$2"; }
 
@@ -49,14 +50,15 @@ fi
 
 # 3 — does it actually run
 CH=""
-for c in /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell \
-         /opt/pw-browsers/chromium-*/chrome-linux/chrome \
+for c in /opt/pw-browsers/chromium_headless_shell-*/chrome-linux*/headless_shell \
+         /opt/pw-browsers/chromium-*/chrome-linux*/chrome \
          "$(command -v chromium 2>/dev/null)" "$(command -v google-chrome 2>/dev/null)"; do
   [ -x "$c" ] && { CH="$c"; break; }
 done
 
 if [ -z "$CH" ]; then
   say "smoke test" "SKIPPED — no chromium found"
+  skipped=1
 else
   python3 - "$FILE" "$TMP/smoke.html" ".check/probe.js" <<'PYEOF'
 import sys
@@ -91,5 +93,13 @@ PYEOF
 fi
 
 echo
-[ "$fail" -eq 0 ] && echo "All checks passed." || echo "CHECKS FAILED — do not publish."
+if [ "$fail" -ne 0 ]; then
+  echo "CHECKS FAILED — do not publish."
+elif [ "$skipped" -eq 1 ]; then
+  echo "Static checks passed, BUT THE PAGE WAS NEVER RUN — no browser here."
+  echo "Do not publish on this result alone: the syntax error that broke the page"
+  echo "once before would pass every check above."
+else
+  echo "All checks passed."
+fi
 exit "$fail"

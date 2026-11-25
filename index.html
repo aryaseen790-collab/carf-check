@@ -1375,7 +1375,7 @@ body.no-fx .hero-c { transition: none; }
   // with an address you are happy to publish, or the line stays inert.
   var CONTACT = '[YOUR EMAIL]';
 
-  var LAST_UPDATED = '2026-09-08';
+  var LAST_UPDATED = '2026-11-25';
 
   /* ============================================================
      DATA — one record per jurisdiction.
@@ -1399,11 +1399,11 @@ body.no-fx .hero-c { transition: none; }
   var DAC8 = 'Council Directive (EU) 2023/2226 (DAC8), Article 8ad — exchange within nine months of the end of the calendar year.';
 
   function euLate(name, authority) {
-    return name + ' is bound by DAC8, the EU directive that carries the CARF into European law, but had not put it into national law when the European Commission opened infringement proceedings against twelve member states in February 2026. What your platform must do, and by when, depends on that national law. Until a named instrument is in force we show no dates. Search ' + authority + ' for "CARF" or "DAC8".';
+    return name + ' is bound by DAC8, the EU directive that carries the CARF into European law, but still had not put it into national law on 19 November 2026, when the European Commission issued a reasoned opinion giving it two months to finish or be referred to the Court of Justice. What your platform must do, and by when, depends on that national law. Until a named instrument is in force we show no dates. Search ' + authority + ' for "CARF" or "DAC8".';
   }
 
   function euOk(name, authority) {
-    return name + ' was not among the twelve member states the European Commission named in February 2026 for failing to transpose DAC8, so it appears to have legislated. We have not yet verified the national instrument, and DAC8 leaves each country to set its own deadline for platforms to file, so we show no dates for ' + name + ' yet. Search ' + authority + ' for "CARF" or "DAC8".';
+    return name + ' appears to have transposed DAC8: of the twelve member states the European Commission wrote to in early 2026, only Czechia and Spain were still being pursued when it issued reasoned opinions on 19 November 2026. We have not verified ' + name + ' own instrument, and DAC8 leaves each country to set its own deadline for platforms to file, so we show no dates for it yet. Search ' + authority + ' for "CARF" or "DAC8".';
   }
 
   function unknown(name, authority) {
@@ -1428,9 +1428,6 @@ body.no-fx .hero-c { transition: none; }
         { date: '2027-01-01', who: 'you', title: 'Your tax residence has to be on file',
           detail: 'Platforms must hold a valid self-certification of your tax residence and taxpayer number for accounts that already existed on 1 January 2026. If you ignore the request, the platform has to stop you making reportable transactions.',
           cite: 'SI 2025/744, due diligence requirements — twelve-month window for pre-existing users, following CARF Section IV.' },
-        { date: '2027-01-31', who: 'platform', title: 'Platforms registered with HMRC',
-          detail: 'Every UK reporting platform has to be registered with HMRC by this date. This one is the platform’s obligation, not yours.',
-          cite: 'SI 2025/744, registration requirement.' },
         { date: '2027-05-31', who: 'platform', title: 'First report reaches HMRC',
           detail: 'Platforms send HMRC everything they recorded during 2026: your identity, your totals, and your transactions asset by asset.',
           cite: 'SI 2025/744, annual report due by 31 May following the reportable period.' },
@@ -1438,8 +1435,10 @@ body.no-fx .hero-c { transition: none; }
           detail: 'HMRC sends data on people resident elsewhere to their own authorities, and receives data held abroad on UK residents. This is the date your foreign exchange accounts become visible here.',
           cite: CARF_MCAA }
       ],
+      note: 'A registration deadline of 31 January 2027 for UK platforms was withdrawn on 2 November 2026, when HMRC also confirmed its reporting portal will not open on 1 January 2027. We have removed that row rather than show a date that no longer stands. The 31 May 2027 reporting deadline is unchanged.',
       sources: [
         { name: 'SI 2025/744', detail: 'The Reporting Cryptoasset Service Providers (Due Diligence and Reporting Requirements) Regulations 2025, made 24 June 2025, in force 1 January 2026.' },
+        { name: 'HMRC guidance, 2 November 2026', detail: 'Withdrew the first-year registration deadline of 31 January 2027 and confirmed the reporting portal will not open on 1 January 2027. The 31 May 2027 reporting deadline is unchanged.' },
         { name: 'CARF-MCAA', detail: 'Multilateral Competent Authority Agreement on Automatic Exchange of Information pursuant to the Crypto-Asset Reporting Framework.' },
         { name: 'OECD CARF', detail: 'Crypto-Asset Reporting Framework, OECD, October 2022, as amended June and October 2023.' }
       ]
@@ -1588,7 +1587,7 @@ body.no-fx .hero-c { transition: none; }
       short: 'IRS',
       outside: true,
       authority: 'the Internal Revenue Service (IRS)',
-      receives: 'The IRS receives your data, but not through the CARF. The United States has not signed the CARF exchange agreement, so there is no CARF route for your details to reach the IRS from abroad. US brokers report to the IRS directly instead, on Form 1099-DA. A platform outside the US may still ask for your details and report you to its own authority — that data simply has nowhere to go under this framework.',
+      receives: 'The IRS receives your data, but not through the CARF yet. The United States is not in the 2027 or 2028 exchange rounds and has not signed the CARF exchange agreement; the OECD commitment list of 23 June 2026 records it for first exchanges by 2029. Until then there is no CARF route for your details to reach the IRS from abroad, and US brokers report to the IRS directly instead, on Form 1099-DA. A platform outside the US may still ask for your details and report you to its own authority.',
       events: [
         { date: '2025-01-01', who: 'platform', title: 'Broker reporting started',
           detail: 'US digital asset brokers began recording gross proceeds from your sales.',
@@ -1605,7 +1604,7 @@ body.no-fx .hero-c { transition: none; }
       ],
       sources: [
         { name: 'IRC § 6045 and 2024 final regulations', detail: 'Gross proceeds reporting from 2025; basis reporting for covered digital assets from 2026; Form 1099-DA.' },
-        { name: 'CARF-MCAA signatory list', detail: 'The United States is not a signatory. Confirm against the OECD’s published list before relying on this.' }
+        { name: 'OECD commitment list, 23 June 2026', detail: 'Records 76 committed jurisdictions: 46 for first exchanges by 2027, 29 by 2028 and the United States by 2029. The United States is not a CARF-MCAA signatory. Confirm against the OECD’s published list before relying on this.' }
       ]
     },
 
@@ -1614,34 +1613,34 @@ body.no-fx .hero-c { transition: none; }
     ch: {
       label: 'Switzerland',
       status: 'unconfirmed',
-      note: 'Switzerland’s law is in force, but the crypto rules were switched off for their first year. Parliament approved extending the Automatic Exchange of Information Act to crypto-assets on 26 September 2025 and the legal basis entered into force on 1 January 2026. On 26 November 2025 the Federal Council decided the crypto provisions would not apply during 2026 while the list of 74 partner states is settled. No exchange date is fixed, so we show none. Watch the State Secretariat for International Finance (SIF) and search for "AIA Kryptowerte".'
+      note: 'Switzerland’s law is in force, but the crypto rules were switched off for their first year. Parliament approved extending the Automatic Exchange of Information Act to crypto-assets on 26 September 2025 and the legal basis entered into force on 1 January 2026. On 26 November 2025 the Federal Council decided the crypto provisions would not apply during 2026. The list of 74 partner states needs a second bill of its own, which Parliament had not passed as of November 2026, and the Federal Council will re-check each partner against the standard before any data moves. No exchange date is fixed, so we show none. Watch the State Secretariat for International Finance (SIF) and search for "AIA Kryptowerte".'
     },
 
     ca: {
       label: 'Canada',
       status: 'unconfirmed',
-      note: 'Canada has draft legislation, not law. Finance released proposals on 15 August 2025 creating a new Part of the Income Tax Act for crypto-asset reporting, and the 2026 spring update deferred the start from 1 January 2026 to 1 January 2027. Until the legislation is enacted, the dates can still move, so we show none. Search Canada.ca and the Department of Finance for "Crypto-Asset Reporting Framework".'
+      note: 'Canada has a bill before Parliament, not a law. The rules sit in Bill C-31, the Budget 2025 Implementation Act No. 2, which would add Part XXI to the Income Tax Act for the 2027 and later calendar years, with the first returns due before 2 May 2028. It had not received Royal Assent in late October 2026, and Part XXI only comes into force when it does, so the wording and the dates can still change. We show none until it is law. Search Canada.ca and the Parliament bill tracker for "Bill C-31" or "Crypto-Asset Reporting Framework".'
     },
 
     au: {
       label: 'Australia',
       status: 'unconfirmed',
-      note: 'Australia has announced the CARF but has not legislated it. The government said in the 2025–26 Mid-Year Economic and Fiscal Outlook on 17 December 2025 that it will implement the framework along with a domestic crypto reporting regime, and the ATO states the measure is not yet law. Until it is, we show no dates. Search ato.gov.au for "Crypto Asset Reporting Framework".'
+      note: 'Australia published draft legislation on 15 October 2026 to implement the CARF and extend the Common Reporting Standard, following the announcement in the 2025–26 Mid-Year Economic and Fiscal Outlook. The ATO still records the measure as not yet law, collection is proposed to start on 1 January 2027, and the first exchange is expected in 2028. Much of the detail is left to regulations that do not exist yet, so we show no dates. Search ato.gov.au for "Crypto Asset Reporting Framework".'
     },
 
     /* ---------------- EU: transposition incomplete ---------------- */
 
-    be: { label: 'Belgium',     status: 'unconfirmed', note: euLate('Belgium', 'the FPS Finance site') },
-    bg: { label: 'Bulgaria',    status: 'unconfirmed', note: euLate('Bulgaria', 'the National Revenue Agency site') },
-    cy: { label: 'Cyprus',      status: 'unconfirmed', note: euLate('Cyprus', 'the Tax Department site') },
+    be: { label: 'Belgium',     status: 'unconfirmed', note: euOk('Belgium', 'the FPS Finance site') },
+    bg: { label: 'Bulgaria',    status: 'unconfirmed', note: euOk('Bulgaria', 'the National Revenue Agency site') },
+    cy: { label: 'Cyprus',      status: 'unconfirmed', note: euOk('Cyprus', 'the Tax Department site') },
     cz: { label: 'Czechia',     status: 'unconfirmed', note: euLate('Czechia', 'the Financial Administration site') },
-    ee: { label: 'Estonia',     status: 'unconfirmed', note: euLate('Estonia', 'the Tax and Customs Board site') },
-    gr: { label: 'Greece',      status: 'unconfirmed', note: euLate('Greece', 'the AADE site') },
-    lu: { label: 'Luxembourg',  status: 'unconfirmed', note: euLate('Luxembourg', 'the Administration des contributions directes site') },
-    mt: { label: 'Malta',       status: 'unconfirmed', note: euLate('Malta', 'the Commissioner for Tax and Customs site') },
-    nl: { label: 'Netherlands', status: 'unconfirmed', note: euLate('the Netherlands', 'the Belastingdienst site') },
-    pl: { label: 'Poland',      status: 'unconfirmed', note: euLate('Poland', 'the Krajowa Administracja Skarbowa site') },
-    pt: { label: 'Portugal',    status: 'unconfirmed', note: euLate('Portugal', 'the Autoridade Tributária site') },
+    ee: { label: 'Estonia',     status: 'unconfirmed', note: euOk('Estonia', 'the Tax and Customs Board site') },
+    gr: { label: 'Greece',      status: 'unconfirmed', note: euOk('Greece', 'the AADE site') },
+    lu: { label: 'Luxembourg',  status: 'unconfirmed', note: euOk('Luxembourg', 'the Administration des contributions directes site') },
+    mt: { label: 'Malta',       status: 'unconfirmed', note: euOk('Malta', 'the Commissioner for Tax and Customs site') },
+    nl: { label: 'Netherlands', status: 'unconfirmed', note: euOk('the Netherlands', 'the Belastingdienst site') },
+    pl: { label: 'Poland',      status: 'unconfirmed', note: euOk('Poland', 'the Krajowa Administracja Skarbowa site') },
+    pt: { label: 'Portugal',    status: 'unconfirmed', note: euOk('Portugal', 'the Autoridade Tributária site') },
     es: { label: 'Spain',       status: 'unconfirmed', note: euLate('Spain', 'the Agencia Tributaria site') },
 
     /* ---------------- EU: legislated, instrument not yet verified ---------------- */
@@ -1677,6 +1676,7 @@ body.no-fx .hero-c { transition: none; }
   };
 
   var CHANGELOG = [
+    { date: '2026-11-25', text: 'Dataset re-checked. The UK registration date of 31 January 2027 was withdrawn by HMRC on 2 November 2026 and has been removed; the 31 May 2027 reporting deadline is unchanged. Ten of the twelve EU member states that had not transposed DAC8 have since done so, leaving Czechia and Spain, which received reasoned opinions on 19 November 2026. Canada now has Bill C-31 before Parliament, awaiting Royal Assent, for the 2027 calendar year. Australia published draft legislation on 15 October 2026 but it is still not law. Switzerland still needs a second bill to approve its partner states. The United States is recorded by the OECD for first exchanges by 2029, so its entry no longer says only that it has not signed. No dated record in the UK, Ireland, Germany, Denmark, Japan or Singapore timelines changed.' },
     { date: '2026-09-08', text: 'Interface rebuilt as one continuous environment: a hero carrying a wireframe globe with the dataset’s own exchange routes on it, a drifting field behind every section below it, a three-stage explainer of how the reporting actually runs, Space Grotesk and Inter embedded in the file rather than fetched, a depth timeline on a filling rail, a data-path diagram and a readiness console. The three questions became a guided sequence: type-to-search for your country, number keys to answer, one question at a time, and answers you can jump back to. Results now open with a readout band carrying your status, the authority and a live countdown, and every date is tagged with who has to act so you can filter down to your own moves. The page then broke out of its single narrow column: wide asymmetric sections, a hero ticker carrying the live dataset, a pinned scroll sequence where the three stages light up in turn, a standing rail beside the questions, and a panel that keeps your status, authority and countdown in view while you read the result. Denmark added as a dated record, on Law No. 409 of 2025 and Executive Order No. 1155 of 2025. Denmark set its own filing date of 31 January, the earliest in the dataset, so Danish users have the tightest run-up of anyone here.' },
     { date: '2026-09-07', text: 'First build. Six jurisdictions with a named instrument in force: United Kingdom, Ireland, Germany, Japan, Singapore, United States. Switzerland, Canada and Australia recorded as announced but not fixed. Twelve EU member states recorded as not yet transposed, following the Commission’s February 2026 infringement proceedings.' }
   ];
@@ -2173,7 +2173,7 @@ body.no-fx .hero-c { transition: none; }
       '<h3>We do not have verified dates for ' + esc(rec.label) + '</h3>' +
       '<p>' + esc(rec.note) + '</p>' +
       '<div class="pull">' +
-        '<p><b>Published counts do not agree, and that disagreement is the honest answer.</b> In June 2026 the OECD recorded 46 jurisdictions committed to report for 2026, 29 more for 2027 and one for 2028. Other tallies published during the same year put total commitments near 76.</p>' +
+        '<p><b>Published counts do not agree, and that disagreement is the honest answer.</b> The OECD commitment list of 23 June 2026 records 76 jurisdictions: 46 for first exchanges by 2027, 29 by 2028 and the United States by 2029. Older tallies of 48, 53 and 67 are still in circulation.</p>' +
         '<p>The numbers differ because committing to the framework, signing the exchange agreement and passing implementing law are three separate steps. A country can have done the first without the last, and only the last one fixes a date.</p>' +
       '</div>' +
       '<p style="margin-top:1.125rem">Search your national tax authority for <b>"CARF"</b>. Authorities use the English acronym even when the rest of the page is in another language. What you are looking for is a law or regulation with a commencement date, not a press release.</p>' +
